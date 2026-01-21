@@ -1,14 +1,12 @@
-import { useState } from 'react'
-import './App.css'
+import { BrowserRouter } from 'react-router-dom';
+import Navbar from './pages/Navbar';
 
 function App() {
-
   return (
+    <BrowserRouter>
+      <Navbar />
+    </BrowserRouter>
+  );
+}
 
-    <h1>Hola</h1>
-
-
-  )
- }
-
-export default App
+export default App;
