@@ -1,9 +1,36 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-export default function DetalleProducto() {
-  const { state } = useLocation();
+export default function DetalleProducto({ carrito = [], setCarrito }) {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const producto = state?.producto;
+  const [producto, setProducto] = useState(null);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    fetch(`https://698bbfdb6c6f9ebe57bd76ba.mockapi.io/kingandqueen/productos/${id}`)
+      .then(r => r.json())
+      .then(datos => {
+        setProducto(datos);
+        setCargando(false);
+      })
+      .catch(() => setCargando(false));
+  }, [id]);
+
+  const agregarAlCarrito = (producto) => {
+    const yaEsta = carrito.find(item => item.id === producto.id);
+    if (yaEsta) {
+      setCarrito(carrito.map(item =>
+        item.id === producto.id
+          ? { ...item, cantidad: (item.cantidad || 1) + 1 }
+          : item
+      ));
+    } else {
+      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+    }
+  };
+
+  if (cargando) return <p>Cargando...</p>;
 
   if (!producto) {
     return (
@@ -37,6 +64,12 @@ export default function DetalleProducto() {
                   onClick={() => navigate("/productos")}
                 >
                   Volver
+                </button>
+                <button
+                  className="btn btn-success w-100"
+                  onClick={() => agregarAlCarrito(producto)}
+                >
+                  Agregar al carrito
                 </button>
               </div>
             </div>

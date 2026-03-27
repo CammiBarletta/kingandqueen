@@ -13,20 +13,19 @@ function App() {
   const [carrito, setCarrito] = useState([]);
 
   return (
-    <div>
-      <Navbar carrito={carrito} />
-      <div style={{ paddingTop: "95px" }}>
-        <Routes>
-          <Route path='/' element={<Inicio />} />
-          <Route path='/nosotros' element={<Nosotros />} />
-          <Route path='/productos' element={<Productos carrito={carrito} setCarrito={setCarrito} />} />
-          <Route path='/productos/:id' element={<DetalleProducto />} />
-          <Route path='/carrito' element={<Carrito carrito={carrito} setCarrito={setCarrito} />} />
-        </Routes>
-      </div>
-      <Footer />
-    </div>
+<div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
+  <Navbar carrito={carrito} />
+  <div style={{ paddingTop: "95px", flex: "1 1 auto", minHeight: "60vh" }}>
+    <Routes>
+      <Route path='/' element={<Inicio />} />
+      <Route path='/nosotros' element={<Nosotros />} />
+      <Route path='/productos' element={<Productos carrito={carrito} setCarrito={setCarrito} />} />
+      <Route path='/productos/:id' element={<DetalleProducto carrito={carrito} setCarrito={setCarrito} />} />
+      <Route path='/carrito' element={<Carrito carrito={carrito} setCarrito={setCarrito} />} />
+    </Routes>
+  </div>
+  <Footer />
+</div>
   );
 }
-
-export default App;
+export default App
