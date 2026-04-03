@@ -6,33 +6,37 @@ function Productos({ carrito = [], setCarrito }) {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+  fetch("https://698bbfdb6c6f9ebe57bd76ba.mockapi.io/kingandqueen/productos")
+    .then((res) => {
+      if (!res.ok) throw new Error("Error al obtener productos");
+      return res.json();
+    })
+    .then((data) => {
+      setProductos(data);
+      setCargando(false);
+    })
+    .catch((err) => {
+      setError("No se pudieron cargar los productos 😢");
+      setCargando(false);
+    });
+}, []);
+
   const agregarAlCarrito = (producto) => {
     if (!carrito) return;
-    const yaEsta = carrito.find(item => item.id === producto.id);
+    const yaEsta = carrito.find((item) => item.id === producto.id);
     if (yaEsta) {
-      setCarrito(carrito.map(item =>
-        item.id === producto.id
-          ? { ...item, cantidad: (item.cantidad || 1) + 1 }
-          : item
-      ));
+      setCarrito(
+        carrito.map((item) =>
+          item.id === producto.id
+            ? { ...item, cantidad: (item.cantidad || 1) + 1 }
+            : item
+        )
+      );
     } else {
       setCarrito([...carrito, { ...producto, cantidad: 1 }]);
     }
   };
-
-  useEffect(() => {
-    fetch("https://698bbfdb6c6f9ebe57bd76ba.mockapi.io/kingandqueen/productos")
-      .then((respuesta) => respuesta.json())
-      .then((datos) => {
-        setProductos(datos);
-        setCargando(false);
-      })
-      .catch((error) => {
-        console.error("Error!:", error);
-        setError("Hubo un problema al cargar los productos.");
-        setCargando(false);
-      });
-  }, []);
 
   if (cargando) return <p>Cargando productos...</p>;
   if (error) return <p>{error}</p>;

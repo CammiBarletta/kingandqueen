@@ -4,7 +4,6 @@ export default function Navbar({ carrito = [] }) {
   const totalItems = carrito.reduce((sum, item) =>
     sum + (item.cantidad || 1), 0
   );
-
   const totalPrecio = carrito.reduce((sum, item) =>
     sum + (Number(item.precio) * (item.cantidad || 1)), 0
   );
@@ -50,7 +49,7 @@ export default function Navbar({ carrito = [] }) {
             className="text-decoration-none"
             style={{ color: "white", fontSize: "0.9rem", whiteSpace: "nowrap" }}
           >
-            👤 Acceder
+            Acceder
           </Link>
 
           {/* Carrito */}

@@ -15,6 +15,7 @@ export default function Inicio() {
           muted
           loop
           playsInline
+          preload="auto"
           style={{ width: "95%", height: "95%", objectFit: "fill" }}
         >
           <source src="/videos/banner_inicio.mp4" type="video/mp4" />

@@ -4,8 +4,8 @@ export default function Footer() {
   const navigate = useNavigate();
 
   return (
-    <footer style={{ backgroundColor: "#2C2C2C", color: "white", padding: "40px 0 20px" }}>
-     <div className="container-fluid px-4">
+    <footer style={{ backgroundColor: "#2C2C2C", color: "white", padding: "40px 0 20px", width: "100%" }}>
+     <div className="container-fluid px-0">
         <div className="row">
 
           {/* COLUMNA 1 — Info del negocio */}
@@ -14,7 +14,7 @@ export default function Footer() {
               KING & QUEEN PET SHOP
             </h6>
             <hr style={{ borderColor: "#4DB8C8", width: "40px", margin: "10px 0" }} />
-            <p style={{ fontSize: "0.9rem", color: "#ccc" }}>Pet shop y Peluquería canina</p>
+            <p style= {{ fontSize: "0.9rem", color: "#ccc" }}>Pet shop y Peluquería canina</p>
             <ul style={{ listStyle: "none", padding: 0, fontSize: "0.85rem", color: "#ccc" }}>
               <li>- Alimentos balanceados</li>
               <li>- Accesorios</li>
