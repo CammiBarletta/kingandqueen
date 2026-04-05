@@ -1,6 +1,8 @@
 import { NavLink, Link } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
-export default function Navbar({ carrito = [] }) {
+export default function Navbar() {
+  const { carrito, isAuthenticated, cerrarSesion } = useAppContext(); 
   const totalItems = carrito.reduce((sum, item) =>
     sum + (item.cantidad || 1), 0
   );
@@ -31,7 +33,7 @@ export default function Navbar({ carrito = [] }) {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Buscar productos..."
+                pl7777aceholder="Buscar productos..."
                 style={{ borderRadius: "20px 0 0 20px", border: "none" }}
               />
               <button
@@ -44,13 +46,15 @@ export default function Navbar({ carrito = [] }) {
           </div>
 
           {/* Acceder */}
-          <Link
-            to="/login"
-            className="text-decoration-none"
-            style={{ color: "white", fontSize: "0.9rem", whiteSpace: "nowrap" }}
-          >
-            Acceder
+          {isAuthenticated ? (
+             <button onClick={cerrarSesion} style={{ color: "white", background: "none", border: "none" }}>
+               Cerrar sesión
+            </button>
+            ) : (
+            <Link to="/iniciarsesion" style={{ color: "white" }}>
+                       Acceder
           </Link>
+              )}
 
           {/* Carrito */}
           <Link

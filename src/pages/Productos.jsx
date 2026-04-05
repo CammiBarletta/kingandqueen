@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
-function Productos({ carrito = [], setCarrito }) {
+function Productos() {
+  const { agregarAlCarrito } = useAppContext();
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -22,21 +24,7 @@ function Productos({ carrito = [], setCarrito }) {
     });
 }, []);
 
-  const agregarAlCarrito = (producto) => {
-    if (!carrito) return;
-    const yaEsta = carrito.find((item) => item.id === producto.id);
-    if (yaEsta) {
-      setCarrito(
-        carrito.map((item) =>
-          item.id === producto.id
-            ? { ...item, cantidad: (item.cantidad || 1) + 1 }
-            : item
-        )
-      );
-    } else {
-      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
-    }
-  };
+  
 
   if (cargando) return <p>Cargando productos...</p>;
   if (error) return <p>{error}</p>;

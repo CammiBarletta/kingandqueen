@@ -1,12 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAppContext } from "../context/AppContext"; 
 
-export default function Carrito({ carrito, setCarrito }) {
-  const vaciarCarrito = () => {
-    setCarrito([]);
-  };
 
+export default function Carrito() { 
+  const { carrito, setCarrito, vaciarCarrito, eliminarDelCarrito, isAuthenticated } = useAppContext(); 
+  const navigate = useNavigate();
   const quitarCantidad = (idProducto) => {
-    const carritoActualizado = carrito.map(producto => {
+  const carritoActualizado = carrito.map(producto => {
       if (producto.id === idProducto) {
         const cantidadActual = producto.cantidad || 1;
         if (cantidadActual === 1) return null;
@@ -14,23 +15,30 @@ export default function Carrito({ carrito, setCarrito }) {
       }
       return producto;
     }).filter(producto => producto !== null);
-    setCarrito(carritoActualizado);
+    setCarrito(carritoActualizado); // esto sigue funcionando igual
   };
 
   const agregarCantidad = (idProducto) => {
-    const nuevoCarrito = carrito.map(producto => {
+  const nuevoCarrito = carrito.map(producto => {
       if (producto.id === idProducto) {
         return { ...producto, cantidad: (producto.cantidad || 1) + 1 };
       }
       return producto;
     });
-    setCarrito(nuevoCarrito);
+    setCarrito(nuevoCarrito); // esto sigue funcionando igual
   };
 
   const total = carrito.reduce((sum, item) => {
     const cantidad = item.cantidad || 1;
     return sum + (Number(item.precio) * cantidad);
   }, 0);
+  const handlePagar = () => {
+    if (!isAuthenticated) {
+      navigate("/iniciarsesion", { state: { desde: "/carrito" } }); // ✅ le dice de dónde viene
+    } else {
+      navigate("/pagar"); // cuando tengas esa página
+    }
+  };
 
   return (
     <div className="container mt-4">
@@ -47,6 +55,7 @@ export default function Carrito({ carrito, setCarrito }) {
               <button className="btn btn-sm btn-outline-secondary" onClick={() => quitarCantidad(item.id)}>-</button>
               <span>{item.cantidad || 1}</span>
               <button className="btn btn-sm btn-outline-secondary" onClick={() => agregarCantidad(item.id)}>+</button>
+              <button className="btn btn-sm btn-danger" onClick={() => eliminarDelCarrito(item.id)}>✕</button> {/* ✅ botón eliminar producto */}
             </div>
           ))}
           <hr />
@@ -54,6 +63,10 @@ export default function Carrito({ carrito, setCarrito }) {
           <button className="btn btn-danger mt-2" onClick={vaciarCarrito}>
             Vaciar Carrito
           </button>
+           <button className="btn" style={{ backgroundColor: "#4DB8C8", color: "white" }} onClick={handlePagar}>
+              {/* cambia el texto según si está logueado o no */}
+              {isAuthenticated ? "Pagar" : "Iniciar sesión para pagar"}
+            </button>
         </>
       )}
     </div>
