@@ -8,8 +8,8 @@ import Productos from './pages/Productos';
 import DetalleProducto from './pages/DetalleProducto';
 import Carrito from './pages/Carrito';
 import Footer from './components/Footer';
-import IniciarSesion from './pages/IniciarSesion'; // ✅ 2. agregar la nueva página
-import { AppProvider } from './context/AppContext'; // ✅ 3. importar el Provider
+import IniciarSesion from './pages/IniciarSesion'; 
+import { AppProvider } from './context/AppContext';
 import './index.css';
 
 function App() {

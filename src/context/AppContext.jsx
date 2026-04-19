@@ -7,10 +7,8 @@ export function AppProvider({ children }) {
   // ── Autenticación ──────────────────────────────────────────
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [usuario, setUsuario] = useState({ nombre: "", email: "" });
-
   // ── Carrito ────────────────────────────────────────────────
   const [carrito, setCarrito] = useState([]);
-
   const agregarAlCarrito = (producto) => {
     setCarrito(prevCarrito => {                          
       const yaEsta = prevCarrito.find(item => item.id === producto.id);

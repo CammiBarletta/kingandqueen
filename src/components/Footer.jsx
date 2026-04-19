@@ -4,8 +4,8 @@ export default function Footer() {
   const navigate = useNavigate();
 
   return (
-    <footer style={{ backgroundColor: "#2C2C2C", color: "white", padding: "40px 0 20px", width: "100%" }}>
-     <div className="container-fluid px-0">
+    <footer style={{ backgroundColor: "#2C2C2C", color: "white", padding: "40px 0 20px", width: "100vw",  marginLeft: "calc(-50vw + 50%)"  }}>
+  <div className="container-fluid px-4">
         <div className="row">
 
           {/* COLUMNA 1 — Info del negocio */}
