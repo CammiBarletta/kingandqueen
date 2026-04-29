@@ -1,14 +1,28 @@
 import { NavLink, Link } from "react-router-dom";
-import { useAppContext } from "../context/AppContext";
+import { useCartContext } from "../context/CartContext";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function Navbar() {
-  const { carrito, isAuthenticated, cerrarSesion } = useAppContext(); 
-  const totalItems = carrito.reduce((sum, item) =>
-    sum + (item.cantidad || 1), 0
-  );
+  const { carrito, vaciarCarrito } = useCartContext();
+  const { isAuthenticated, cerrarSesion: cerrarSesionAuth } = useAuthContext();
+
+  const totalItems = carrito.reduce((sum, item) => sum + (item.cantidad || 1), 0);
   const totalPrecio = carrito.reduce((sum, item) =>
     sum + (Number(item.precio) * (item.cantidad || 1)), 0
   );
+
+  // Cierra sesión y además limpia el carrito
+  const handleCerrarSesion = () => {
+    cerrarSesionAuth();
+    vaciarCarrito();
+  };
+
+  const navLinkStyle = ({ isActive }) => ({
+    color: isActive ? "#4DB8C8" : "white",
+    fontSize: "0.9rem",
+    transition: "color 0.2s ease",
+    textDecoration: "none",
+  });
 
   return (
     <header className="fixed-top shadow-sm">
@@ -18,7 +32,7 @@ export default function Navbar() {
         <div className="container-fluid px-4 d-flex align-items-center gap-3">
 
           {/* Logo */}
-          <Link to="/" className="text-decoration-none">
+          <Link to="/" className="text-decoration-none" style={{ flexShrink: 0 }}>
             <span style={{ color: "white", fontWeight: "700", fontSize: "1.3rem", letterSpacing: "1px" }}>
               King & Queen
             </span>
@@ -33,8 +47,8 @@ export default function Navbar() {
               <input
                 type="text"
                 className="form-control"
-                pl7777aceholder="Buscar productos..."
-                style={{ borderRadius: "20px 0 0 20px", border: "none" }}
+                placeholder="Buscar productos..."
+                style={{ borderRadius: "20px 0 0 20px", border: "none", fontSize: "0.9rem" }}
               />
               <button
                 className="btn"
@@ -45,26 +59,75 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Acceder */}
+          {/* Acceder / Cerrar sesión */}
           {isAuthenticated ? (
-             <button onClick={cerrarSesion} style={{ color: "white", background: "none", border: "none" }}>
-               Cerrar sesión
+            <button
+              onClick={handleCerrarSesion}
+              style={{
+                color: "white",
+                background: "none",
+                border: "1px solid rgba(255,255,255,0.5)",
+                borderRadius: "6px",
+                padding: "5px 12px",
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                flexShrink: 0,
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.15)"}
+              onMouseLeave={e => e.currentTarget.style.background = "none"}
+            >
+              👤 Cerrar sesión
             </button>
-            ) : (
-            <Link to="/iniciarsesion" style={{ color: "white" }}>
-                       Acceder
-          </Link>
-              )}
+          ) : (
+            <Link
+              to="/iniciarsesion"
+              style={{
+                color: "white",
+                border: "1px solid rgba(255,255,255,0.5)",
+                borderRadius: "6px",
+                padding: "5px 12px",
+                fontSize: "0.85rem",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                flexShrink: 0,
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.15)"}
+              onMouseLeave={e => e.currentTarget.style.background = "none"}
+            >
+              👤 Acceder
+            </Link>
+          )}
 
           {/* Carrito */}
           <Link
             to="/carrito"
-            className="text-decoration-none d-flex align-items-center gap-1 px-3 py-1"
-            style={{ backgroundColor: "#2C2C2C", color: "white", borderRadius: "6px", whiteSpace: "nowrap", fontSize: "0.9rem" }}
+            className="text-decoration-none d-flex align-items-center gap-2 px-3 py-1"
+            style={{
+              backgroundColor: "#2C2C2C",
+              color: "white",
+              borderRadius: "6px",
+              whiteSpace: "nowrap",
+              fontSize: "0.9rem",
+              flexShrink: 0,
+              transition: "background 0.2s ease",
+            }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#3e3e3e"}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = "#2C2C2C"}
           >
-            🛒 ${totalPrecio.toFixed(2)}
+            🛒
+            <span style={{ fontWeight: "600" }}>${totalPrecio.toFixed(2)}</span>
             {totalItems > 0 && (
-              <span className="badge rounded-pill ms-1" style={{ backgroundColor: "#4DB8C8" }}>
+              <span
+                className="badge rounded-pill"
+                style={{ backgroundColor: "#4DB8C8", fontSize: "0.75rem" }}
+              >
                 {totalItems}
               </span>
             )}
@@ -77,51 +140,23 @@ export default function Navbar() {
       <div style={{ backgroundColor: "#2C2C2C" }} className="py-1">
         <div className="container-fluid px-4">
           <ul className="navbar-nav flex-row gap-4 justify-content-center">
-
-            <li className="nav-item">
-              <NavLink to="/" className={({ isActive }) =>
-                isActive ? "nav-link fw-bold" : "nav-link"
-              } style={({ isActive }) => ({
-                color: isActive ? "#4DB8C8" : "white",
-                fontSize: "0.9rem"
-              })}>
-                INICIO
-              </NavLink>
-            </li>
-
-            <li className="nav-item">
-              <NavLink to="/productos" className={({ isActive }) =>
-                isActive ? "nav-link fw-bold" : "nav-link"
-              } style={({ isActive }) => ({
-                color: isActive ? "#4DB8C8" : "white",
-                fontSize: "0.9rem"
-              })}>
-                PRODUCTOS
-              </NavLink>
-            </li>
-
-            <li className="nav-item">
-              <NavLink to="/nosotros" className={({ isActive }) =>
-                isActive ? "nav-link fw-bold" : "nav-link"
-              } style={({ isActive }) => ({
-                color: isActive ? "#4DB8C8" : "white",
-                fontSize: "0.9rem"
-              })}>
-                NOSOTROS
-              </NavLink>
-            </li>
-
-            <li className="nav-item">
-              <NavLink to="/contacto" className={({ isActive }) =>
-                isActive ? "nav-link fw-bold" : "nav-link"
-              } style={({ isActive }) => ({
-                color: isActive ? "#4DB8C8" : "white",
-                fontSize: "0.9rem"
-              })}>
-                CONTACTO
-              </NavLink>
-            </li>
-
+            {[
+              { to: "/", label: "INICIO" },
+              { to: "/productos", label: "PRODUCTOS" },
+              { to: "/nosotros", label: "NOSOTROS" },
+              { to: "/contacto", label: "CONTACTO" },
+            ].map(({ to, label }) => (
+              <li className="nav-item" key={to}>
+                <NavLink
+                  to={to}
+                  end={to === "/"}
+                  className={({ isActive }) => isActive ? "nav-link fw-bold" : "nav-link"}
+                  style={navLinkStyle}
+                >
+                  {label}
+                </NavLink>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

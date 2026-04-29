@@ -1,4 +1,4 @@
-0import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuthContext } from '../context/AuthContext';
 import { useCartContext } from '../context/CartContext';
 
@@ -103,3 +103,4 @@ export default function Pagar() {
   );
 }
 
+0

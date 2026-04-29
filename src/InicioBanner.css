@@ -1,0 +1,111 @@
+/* ============================================================
+   InicioBanner.css
+   Banner de video — full-width, responsive, sin deformación
+   ============================================================ */
+
+/* ---------- Contenedor principal ---------- */
+.inicio-banner {
+  /* Separa del Navbar sin hacks de transformación */
+  margin-top: 0;
+  margin-bottom: 2rem;
+  /* Full-width respetando el flujo normal del documento */
+  width: 100%;
+  max-width: 100%;
+  /* Altura base — Desktop */
+  height: 300px;
+  max-height: 320px;
+  /* Contiene el video y el overlay */
+  position: relative;
+  overflow: hidden;
+  /* Bordes redondeados suaves */
+  border-radius: 16px;
+  /* Sombra sutil para profundidad */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  /* Evita que el border-radius sea ignorado por el video */
+  isolation: isolate;
+  background-color: #0d0d0d; /* color de fondo mientras carga */
+}
+
+/* ---------- Video ---------- */
+.inicio-banner__video {
+  position: absolute;
+  inset: 0;           /* top/right/bottom/left: 0 */
+  width: 100%;
+  height: 100%;
+  /* Cubre el contenedor sin deformarse */
+  object-fit: cover; 
+  object-position: 50% 20%;
+  /* Transición suave al aparecer */
+  opacity: 0;
+  transition: opacity 0.6s ease;
+} 
+
+.inicio-banner__video--visible {
+  opacity: 1;
+}
+
+/* ---------- Skeleton / placeholder ---------- */
+.inicio-banner__skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    #1a1a1a 25%,
+    #2a2a2a 50%,
+    #1a1a1a 75%
+  );
+  background-size: 200% 100%;
+  animation: banner-shimmer 1.6s infinite;
+}
+
+@keyframes banner-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ---------- Overlay para contenido superpuesto ---------- */
+.inicio-banner__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* Gradiente semitransparente para legibilidad del texto */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+
+  /* Espaciado interno para el contenido */
+  padding: 2rem;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* ---------- Responsive ---------- */
+
+/* Tablet */
+@media (max-width: 991.98px) {
+  .inicio-banner {
+    height: 300px;
+    border-radius: 12px;
+    margin-top: 1.25rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 575.98px) {
+  .inicio-banner {
+    height: 220px;
+    border-radius: 10px;
+    margin-top: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .inicio-banner__overlay {
+    padding: 1rem;
+  }
+}

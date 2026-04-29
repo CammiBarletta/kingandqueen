@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; 
-import { useAppContext } from "../context/AppContext";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function IniciarSesion() {
-  const { setIsAuthenticated, setUsuario } = useAppContext();
+  const { iniciarSesion } = useAuthContext();
   const navigate = useNavigate();
-  const ubicacion = useLocation(); //  capturamos desde dónde vino el usuario
+  const ubicacion = useLocation();
 
   const [form, setForm] = useState({ nombre: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -17,6 +17,7 @@ export default function IniciarSesion() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Validaciones primero
     if (!form.nombre || !form.email || !form.password) {
       setError("Por favor completá todos los campos.");
       return;
@@ -30,10 +31,9 @@ export default function IniciarSesion() {
       return;
     }
 
-    setIsAuthenticated(true);
-    setUsuario({ nombre: form.nombre, email: form.email });
+    //  si todo está OK, avanza
+       iniciarSesion(form.nombre, form.email);
 
-    // ✅ Si vino de alguna página, lo devuelve ahí. Si no, va al inicio
     const destino = ubicacion.state?.desde || "/";
     navigate(destino);
   };
@@ -81,11 +81,14 @@ export default function IniciarSesion() {
           />
         </div>
 
-        <button type="submit" className="btn w-100 mb-2" style={{ backgroundColor: "#4DB8C8", color: "white" }}>
+        <button
+          type="submit"
+          className="btn w-100 mb-2"
+          style={{ backgroundColor: "#4DB8C8", color: "white" }}
+        >
           Ingresar
         </button>
 
-        {/*  botón cancelar, vuelve a donde estaba */}
         <button
           type="button"
           className="btn btn-outline-secondary w-100"
@@ -93,7 +96,6 @@ export default function IniciarSesion() {
         >
           Cancelar
         </button>
-
       </form>
     </div>
   );

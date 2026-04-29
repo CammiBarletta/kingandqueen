@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useAppContext } from "../context/AppContext"; // ✅ agregar
+import { useCartContext } from "../context/CartContext";
 
-export default function DetalleProducto() { // ✅ sacar { carrito, setCarrito } de los parámetros
-  const { agregarAlCarrito } = useAppContext(); // ✅ traer del contexto
+export default function DetalleProducto() {
+  const { carrito, vaciarCarrito, agregarAlCarrito} = useCartContext();
   const { id } = useParams();
   const navigate = useNavigate();
   const [producto, setProducto] = useState(null);
@@ -19,7 +19,6 @@ export default function DetalleProducto() { // ✅ sacar { carrito, setCarrito }
       .catch(() => setCargando(false));
   }, [id]);
 
-  // ✅ BORRAR la función agregarAlCarrito local, ya viene del contexto
 
   if (cargando) return <p>Cargando...</p>;
 
