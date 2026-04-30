@@ -4,36 +4,18 @@ import { useCartContext } from '../context/CartContext';
 import { useAuthContext } from "../context/AuthContext";
 
 export default function Carrito() {
-const { carrito, vaciarCarrito } = useCartContext();
+  const { 
+    carrito, 
+    total,
+    vaciarCarrito,
+    eliminarDelCarrito,
+    agregarCantidad,
+    quitarCantidad,
+
+  } = useCartContext();
+  
   const { isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
-
-  const quitarCantidad = (idProducto) => {
-    const carritoActualizado = carrito.map(producto => {
-      if (producto.id === idProducto) {
-        const cantidadActual = producto.cantidad || 1;
-        if (cantidadActual === 1) return null;
-        return { ...producto, cantidad: cantidadActual - 1 };
-      }
-      return producto;
-    }).filter(producto => producto !== null);
-    setCarrito(carritoActualizado);
-  };
-
-  const agregarCantidad = (idProducto) => {
-    const nuevoCarrito = carrito.map(producto => {
-      if (producto.id === idProducto) {
-        return { ...producto, cantidad: (producto.cantidad || 1) + 1 };
-      }
-      return producto;
-    });
-    setCarrito(nuevoCarrito);
-  };
-
-  const total = carrito.reduce((sum, item) => {
-    const cantidad = item.cantidad || 1;
-    return sum + (Number(item.precio) * cantidad);
-  }, 0);
 
   const handlePagar = () => {
     if (!isAuthenticated) {
@@ -74,6 +56,7 @@ const { carrito, vaciarCarrito } = useCartContext();
             >
               {isAuthenticated ? "Pagar" : "Iniciar sesión para pagar"}
             </button>
+           
           </div>
         </>
       )}

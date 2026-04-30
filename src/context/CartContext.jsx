@@ -7,7 +7,7 @@ export const CartContext = createContext();
 export function CartProvider({ children }) {
   // Estado del carrito
   const [carrito, setCarrito] = useState([]);
-
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   // Funciones para el carrito
 const agregarAlCarrito = (producto) => {
     setCarrito(prevCarrito => {
@@ -23,7 +23,7 @@ const agregarAlCarrito = (producto) => {
         return [...prevCarrito, { ...producto, cantidad: 1 }];
       }
     });
-    alert(`Producto ${producto.nombre} agregado.`);
+   toast.success(`${producto.nombre} agregado al carrito 🐾`);
   };
 
   const vaciarCarrito = () => {
@@ -33,6 +33,9 @@ const agregarAlCarrito = (producto) => {
   const eliminarDelCarrito = (productoId) => {
     setCarrito(carrito.filter(item => item.id !== productoId));
   };
+  const toggleDrawer = () => setIsDrawerOpen(prev => !prev);
+  const cerrarDrawer = () => setIsDrawerOpen(false);
+
 
    const quitarCantidad = (idProducto) => {
     const carritoActualizado = carrito.map(producto => {
@@ -67,6 +70,27 @@ const agregarAlCarrito = (producto) => {
     const cantidad = item.cantidad || 1;
     return sum + (Number(item.precio) * cantidad);
   }, 0);
+
+  const enviarPedidoPorWhatsapp = () => {
+  // 1. Arma la lista de productos
+  const items = carrito.map(item => 
+    `• ${item.nombre} x${item.cantidad || 1} - $${(Number(item.precio) * (item.cantidad || 1)).toLocaleString('es-AR')}`
+  ).join('\n');
+
+  // 2. Arma el mensaje completo
+  const mensaje = 
+    ` *Nuevo pedido King & Queen*\n\n` +
+    `${items}\n\n` +
+    `*Total: $${total.toLocaleString('es-AR')}*\n\n` +
+    `¡Hola! Quiero realizar este pedido `;
+
+  // 3. Codifica el mensaje para la URL
+  const mensajeCodificado = encodeURIComponent(mensaje);
+
+  // 4. Abre WhatsApp con el mensaje
+  const numeroWhatsapp = "5491128714704"; // WP CAMI // CAMBIAR POR ANDERSON
+  window.open(`https://wa.me/${numeroWhatsapp}?text=${mensajeCodificado}`, '_blank');
+};
  
   // Valor que se provee a todos los componentes
   const value = {  
@@ -81,7 +105,13 @@ const agregarAlCarrito = (producto) => {
     quitarCantidad,
 
     // f(x) total
-    total
+    total ,
+    // WhatsApp
+    enviarPedidoPorWhatsapp,
+
+    isDrawerOpen,
+    toggleDrawer,
+    cerrarDrawer,
   };
 
   return (

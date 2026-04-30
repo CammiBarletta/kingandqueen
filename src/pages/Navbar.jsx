@@ -3,6 +3,7 @@ import { NavLink, Link } from "react-router-dom";
 import { useCartContext } from "../context/CartContext";
 import { useAuthContext } from "../context/AuthContext";
 import "../Navbar.css";
+import { BsCart3 } from "react-icons/bs";
 
 const NAV_LINKS = [
   { to: "/", label: "Inicio" },
@@ -16,7 +17,7 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
 
-  const { carrito, vaciarCarrito }                          = useCartContext();
+  const { carrito, vaciarCarrito, toggleDrawer } = useCartContext();
   const { isAuthenticated, cerrarSesion: cerrarSesionAuth } = useAuthContext();
 
   const totalItems  = carrito.reduce((sum, item) => sum + (item.cantidad || 1), 0);
@@ -120,19 +121,25 @@ export default function Navbar() {
             )}
 
             {/* Carrito */}
-            <Link to="/carrito" className="navbar-actions__cart">
-              <div className="navbar-actions__cart-icon-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                  <line x1="3" y1="6" x2="21" y2="6"/>
-                  <path d="M16 10a4 4 0 0 1-8 0"/>
-                </svg>
-                {totalItems > 0 && (
-                  <span className="navbar-actions__cart-badge">{totalItems}</span>
+            <button 
+              onClick={toggleDrawer} 
+              className="navbar-actions__cart border-0 bg-transparent p-0" 
+                aria-label="Abrir carrito"
+                >
+                <div className="navbar-actions__cart-icon-wrap">
+                <BsCart3 size={24} /> 
+    
+               {totalItems > 0 && (
+                <span className="navbar-actions__cart-badge">
+                 {totalItems}
+                </span>
                 )}
-              </div>
-              <span className="navbar-actions__cart-price">${totalPrecio.toFixed(2)}</span>
-            </Link>
+                </div>
+  
+            <span className="navbar-actions__cart-price">
+              ${totalPrecio.toFixed(2)}
+            </span>
+            </button>
 
             {/* Hamburguesa mobile */}
             <button

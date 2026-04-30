@@ -8,95 +8,149 @@ export default function IniciarSesion() {
   const ubicacion = useLocation();
 
   const [form, setForm] = useState({ nombre: "", email: "", password: "" });
-  const [error, setError] = useState("");
+  const [errores, setErrores] = useState({});
+  const [cargando, setCargando] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+    // Limpia el error del campo cuando empieza a escribir
+    if (errores[name]) {
+      setErrores(prev => ({ ...prev, [name]: "" }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validar = () => {
+    const nuevosErrores = {};
+    if (!form.nombre.trim()) 
+      nuevosErrores.nombre = "El nombre es obligatorio.";
+    if (!form.email.trim()) 
+      nuevosErrores.email = "El email es obligatorio.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      nuevosErrores.email = "El email no es válido.";
+    if (!form.password) 
+      nuevosErrores.password = "La contraseña es obligatoria.";
+    else if (form.password.length < 6)
+      nuevosErrores.password = "Mínimo 6 caracteres.";
+    return nuevosErrores;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validaciones primero
-    if (!form.nombre || !form.email || !form.password) {
-      setError("Por favor completá todos los campos.");
-      return;
-    }
-    if (!form.email.includes("@")) {
-      setError("El email no es válido.");
-      return;
-    }
-    if (form.password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+    const nuevosErrores = validar();
+    if (Object.keys(nuevosErrores).length > 0) {
+      setErrores(nuevosErrores);
       return;
     }
 
-    //  si todo está OK, avanza
-       iniciarSesion(form.nombre, form.email);
-
-    const destino = ubicacion.state?.desde || "/";
-    navigate(destino);
+    setCargando(true);
+    try {
+      await iniciarSesion(form.nombre, form.email);
+      const destino = ubicacion.state?.desde || "/";
+      navigate(destino);
+    } catch (error) {
+      setErrores({ general: "Hubo un error al iniciar sesión." });
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "450px" }}>
-      <h2 className="mb-4 text-center">Iniciar Sesión</h2>
+    <div className="container mt-5" style={{ maxWidth: "420px" }}>
 
-      {error && <div className="alert alert-danger">{error}</div>}
+      {/* Header */}
+      <div className="text-center mb-4">
+        <h2 style={{ color: "#2C2C2C", fontWeight: "700" }}>Bienvenido </h2>
+        <p className="text-muted" style={{ fontSize: "0.9rem" }}>
+          Ingresá para continuar con tu compra
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit}>
+      {/* Error general */}
+      {errores.general && (
+        <div className="alert alert-danger py-2">{errores.general}</div>
+      )}
+
+      <form onSubmit={handleSubmit} noValidate>
+
+        {/* Nombre */}
         <div className="mb-3">
-          <label className="form-label">Nombre</label>
+          <label className="form-label fw-semibold">Nombre</label>
           <input
             type="text"
             name="nombre"
-            className="form-control"
+            className={`form-control ${errores.nombre ? "is-invalid" : ""}`}
             value={form.nombre}
             onChange={handleChange}
             placeholder="Tu nombre"
+            autoComplete="name"
           />
+          {errores.nombre && (
+            <div className="invalid-feedback">{errores.nombre}</div>
+          )}
         </div>
 
+        {/* Email */}
         <div className="mb-3">
-          <label className="form-label">Email</label>
+          <label className="form-label fw-semibold">Email</label>
           <input
             type="email"
             name="email"
-            className="form-control"
+            className={`form-control ${errores.email ? "is-invalid" : ""}`}
             value={form.email}
             onChange={handleChange}
             placeholder="tu@email.com"
+            autoComplete="email"
           />
+          {errores.email && (
+            <div className="invalid-feedback">{errores.email}</div>
+          )}
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Contraseña</label>
+        {/* Contraseña */}
+        <div className="mb-4">
+          <label className="form-label fw-semibold">Contraseña</label>
           <input
             type="password"
             name="password"
-            className="form-control"
+            className={`form-control ${errores.password ? "is-invalid" : ""}`}
             value={form.password}
             onChange={handleChange}
             placeholder="Mínimo 6 caracteres"
+            autoComplete="current-password"
           />
+          {errores.password && (
+            <div className="invalid-feedback">{errores.password}</div>
+          )}
         </div>
 
+        {/* Botones */}
         <button
           type="submit"
           className="btn w-100 mb-2"
-          style={{ backgroundColor: "#4DB8C8", color: "white" }}
+          style={{ backgroundColor: "#4DB8C8", color: "white", borderRadius: "8px" }}
+          disabled={cargando}
         >
-          Ingresar
+          {cargando ? "Ingresando..." : "Ingresar"}
         </button>
 
         <button
           type="button"
           className="btn btn-outline-secondary w-100"
           onClick={() => navigate(ubicacion.state?.desde || "/")}
+          disabled={cargando}
         >
           Cancelar
         </button>
+
       </form>
+
+      {/* Nota aclaratoria */}
+      <p className="text-center text-muted mt-4" style={{ fontSize: "0.78rem" }}>
+        Este es un sistema de autenticación de práctica.
+        <br />No uses contraseñas reales.
+      </p>
+
     </div>
   );
 }

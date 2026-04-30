@@ -22,16 +22,15 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Función para iniciar sesión
-  const iniciarSesion = (username) => {
-    const token = `fake-token-${username}`;
-    localStorage.setItem("authToken", token);
-
-    const emailGuardado = localStorage.getItem("authEmail");
-    setUsuario({
-      nombre: username,
-      email: emailGuardado || "",
-    });
-  };
+const iniciarSesion = (username, email) => {
+  const token = `fake-token-${username}`;
+  localStorage.setItem("authToken", token);
+  localStorage.setItem("authEmail", email); 
+  setUsuario({
+    nombre: username,
+    email: email, 
+  });
+};
 
   // Función para cerrar sesión
   const cerrarSesion = () => {

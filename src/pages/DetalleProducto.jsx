@@ -1,26 +1,17 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useCartContext } from "../context/CartContext";
+import { useProducts } from "../context/ProductsContext";
 
 export default function DetalleProducto() {
-  const { carrito, vaciarCarrito, agregarAlCarrito} = useCartContext();
   const { id } = useParams();
   const navigate = useNavigate();
-  const [producto, setProducto] = useState(null);
-  const [cargando, setCargando] = useState(true);
+  const { agregarAlCarrito } = useCartContext();
+  const { productos, cargando } = useProducts();
 
-  useEffect(() => {
-    fetch(`https://698bbfdb6c6f9ebe57bd76ba.mockapi.io/kingandqueen/productos/${id}`)
-      .then(r => r.json())
-      .then(datos => {
-        setProducto(datos);
-        setCargando(false);
-      })
-      .catch(() => setCargando(false));
-  }, [id]);
+  // Busca el producto en el contexto en vez de hacer fetch
+  const producto = productos.find(p => p.id === id);
 
-
-  if (cargando) return <p>Cargando...</p>;
+  if (cargando) return <p className="container mt-4">Cargando...</p>;
 
   if (!producto) {
     return (
@@ -47,7 +38,7 @@ export default function DetalleProducto() {
             <div className="card-body">
               <h2 className="card-title">{producto.nombre}</h2>
               <p className="card-text text-muted">{producto.descripcion}</p>
-              <p className="fw-bold fs-4">${producto.precio}</p>
+              <p className="fw-bold fs-4">${Number(producto.precio).toLocaleString('es-AR')}</p>
               <div className="d-flex gap-2">
                 <button
                   className="btn btn-outline-secondary"
@@ -57,7 +48,7 @@ export default function DetalleProducto() {
                 </button>
                 <button
                   className="btn btn-success w-100"
-                  onClick={() => agregarAlCarrito(producto)} // ✅ misma línea, pero ahora usa la del contexto
+                  onClick={() => agregarAlCarrito(producto)}
                 >
                   Agregar al carrito
                 </button>
