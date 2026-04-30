@@ -1,0 +1,144 @@
+
+:root {
+  --footer-bg:      #2c2c2c;
+  --footer-accent:  #4db8c8;
+  --footer-text:    #ccc;
+  --footer-muted:   #888;
+  --footer-border:  #444;
+}
+
+/* ---------- Contenedor principal ---------- */
+.site-footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  width: 100%;          
+  padding: 40px 0 20px;
+}
+
+/* ---------- Grid de columnas ---------- */
+.site-footer__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+/* ---------- Columna individual ---------- */
+.site-footer__col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Encabezados ---------- */
+.site-footer__heading {
+  color: var(--footer-accent);
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+/* ---------- Línea decorativa ---------- */
+.site-footer__divider {
+  display: block;
+  width: 40px;
+  height: 2px;
+  background-color: var(--footer-accent);
+  margin-bottom: 14px;
+}
+
+/* ---------- Texto genérico ---------- */
+.site-footer__text {
+  font-size: 0.85rem;
+  color: var(--footer-text);
+  margin-bottom: 6px;
+}
+
+.site-footer__tagline {
+  margin-top: 12px;
+}
+
+/* ---------- Lista de servicios ---------- */
+.site-footer__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--footer-text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ---------- Nav links ---------- */
+.site-footer__nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.site-footer__nav li {
+  border-bottom: 1px solid var(--footer-border);
+  padding: 8px 0;
+}
+
+.site-footer__nav li:last-child {
+  border-bottom: none;
+}
+
+.site-footer__nav a {
+  color: var(--footer-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.site-footer__nav a:hover {
+  color: var(--footer-accent);
+}
+
+/* ---------- Redes sociales ---------- */
+.site-footer__social {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.site-footer__social-link {
+  color: var(--footer-accent);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: opacity 0.2s ease;
+}
+
+.site-footer__social-link:hover {
+  opacity: 0.75;
+}
+
+/* ---------- Barra inferior ---------- */
+.site-footer__hr {
+  border-color: var(--footer-border);
+  margin: 24px 24px 16px;
+}
+
+.site-footer__copy {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--footer-muted);
+  margin: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 767px) {
+  .site-footer__inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .site-footer__hr {
+    margin: 20px 16px 14px;
+  }
+}

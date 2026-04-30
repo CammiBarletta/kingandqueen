@@ -12,8 +12,8 @@
   width: 100%;
   max-width: 100%;
   /* Altura base — Desktop */
-  height: 300px;
-  max-height: 320px;
+  height: 400px;
+  max-height: 400px;  
   /* Contiene el video y el overlay */
   position: relative;
   overflow: hidden;
@@ -25,20 +25,17 @@
   isolation: isolate;
   background-color: #0d0d0d; /* color de fondo mientras carga */
 }
-
 /* ---------- Video ---------- */
 .inicio-banner__video {
-  position: absolute;
-  inset: 0;           /* top/right/bottom/left: 0 */
-  width: 100%;
+  position: absolute;  /* ← correcto */
+  inset: 0;
+  width: 100%;         /* ← siempre 100% */
   height: 100%;
-  /* Cubre el contenedor sin deformarse */
-  object-fit: cover; 
-  object-position: 50% 20%;
-  /* Transición suave al aparecer */
+  object-fit: cover;
+  object-position: center;
   opacity: 0;
   transition: opacity 0.6s ease;
-} 
+}
 
 .inicio-banner__video--visible {
   opacity: 1;

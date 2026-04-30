@@ -11,6 +11,7 @@ import IniciarSesion from './pages/IniciarSesion';
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import './index.css';
+import './Footer.css'
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
       <AuthProvider>
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
           <Navbar />
-          <div style={{ paddingTop: "95px", flex: "1 1 auto", minHeight: "60vh" }}>
+          <div style={{ paddingTop: "var(--navbar-height)",flex: "1 1 auto",minHeight: "60vh"}}>
             <Routes>
               <Route path='/' element={<Inicio />} />
               <Route path='/nosotros' element={<Nosotros />} />
