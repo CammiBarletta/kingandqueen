@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useCartContext } from '../context/CartContext';
-import { useAuthContext } from '../context/AuthContext';
 
 export default function CartDrawer() {
   const {
@@ -14,18 +13,12 @@ export default function CartDrawer() {
     quitarCantidad,
   } = useCartContext();
 
-  const { isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
 
-  const handlePagar = () => {
-    cerrarDrawer();
-    if (!isAuthenticated) {
-      navigate("/iniciarsesion", { state: { desde: "/pagar" } });
-    } else {
-      navigate("/pagar");
-    }
-  };
-
+const handlePagar = () => {
+  cerrarDrawer();
+  navigate("/pagar");
+};
   return (
     <>
       {/* Overlay oscuro detrás del drawer */}
@@ -153,12 +146,12 @@ export default function CartDrawer() {
                 ${total.toLocaleString('es-AR')}
               </span>
             </div>
-            <button
-              className="btn w-100 mb-2"
-              style={{ backgroundColor: "#4DB8C8", color: "white", borderRadius: "8px" }}
-              onClick={handlePagar}
-            >
-              {isAuthenticated ? "Continuar con el pago →" : "Iniciar sesión para pagar"}
+           <button
+            className="btn w-100 mb-2"
+            style={{ backgroundColor: "#4DB8C8", color: "white", borderRadius: "8px" }}
+            onClick={handlePagar}
+              >
+              Continuar con el pago →
             </button>
             <button
               className="btn btn-outline-secondary w-100 btn-sm"

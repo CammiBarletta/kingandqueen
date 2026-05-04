@@ -15,9 +15,19 @@ export default function Pagar() {
 
   // Si el carrito está vacío redirigí a productos
   if (carrito.length === 0) {
-    navigate("/productos");
-    return null;
-  }
+  return (
+    <div className="container mt-4 text-center">
+      <p>No tenés productos en el carrito.</p>
+      <button 
+        className="btn"
+        style={{ backgroundColor: "#4DB8C8", color: "white" }}
+        onClick={() => navigate("/productos")}
+      >
+        Ver productos
+      </button>
+    </div>
+  );
+}
 
   const confirmarCompra = () => {
     enviarPedidoPorWhatsapp(); // abre WhatsApp con el pedido

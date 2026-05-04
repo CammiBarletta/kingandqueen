@@ -6,6 +6,7 @@ export default function IniciarSesion() {
   const { iniciarSesion } = useAuthContext();
   const navigate = useNavigate();
   const ubicacion = useLocation();
+  const desde = ubicacion.state?.desde || "/";
 
   const [form, setForm] = useState({ nombre: "", email: "", password: "" });
   const [errores, setErrores] = useState({});
@@ -34,27 +35,25 @@ export default function IniciarSesion() {
       nuevosErrores.password = "Mínimo 6 caracteres.";
     return nuevosErrores;
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const nuevosErrores = validar();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const nuevosErrores = validar();
-    if (Object.keys(nuevosErrores).length > 0) {
-      setErrores(nuevosErrores);
-      return;
-    }
+  if (Object.keys(nuevosErrores).length > 0) {
+    setErrores(nuevosErrores);
+    return;
+  }
 
-    setCargando(true);
-    try {
-      await iniciarSesion(form.nombre, form.email);
-      const destino = ubicacion.state?.desde || "/";
-      navigate(destino);
-    } catch (error) {
-      setErrores({ general: "Hubo un error al iniciar sesión." });
-    } finally {
-      setCargando(false);
-    }
-  };
-
+  setCargando(true);
+  try {
+    await iniciarSesion(form.nombre, form.email);
+    navigate(desde, { replace: true });
+  } catch (error) {
+    setErrores({ general: "Hubo un error al iniciar sesión." });
+  } finally {
+    setCargando(false);
+  }
+};
   return (
     <div className="container mt-5" style={{ maxWidth: "420px" }}>
 
@@ -137,7 +136,7 @@ export default function IniciarSesion() {
         <button
           type="button"
           className="btn btn-outline-secondary w-100"
-          onClick={() => navigate(ubicacion.state?.desde || "/")}
+         onClick={() => navigate(desde, { replace: true })}
           disabled={cargando}
         >
           Cancelar

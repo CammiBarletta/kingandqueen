@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState,  useEffect} from "react";
+import { toast } from "react-toastify";
 
 // Crear el contexto
 export const CartContext = createContext();
@@ -6,7 +7,13 @@ export const CartContext = createContext();
 // Proveedor del contexto
 export function CartProvider({ children }) {
   // Estado del carrito
-  const [carrito, setCarrito] = useState([]);
+  const [carrito, setCarrito] = useState(() => {
+  const guardado = localStorage.getItem("carrito");
+  return guardado ? JSON.parse(guardado) : [];
+});
+    useEffect(() => {
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+      }, [carrito]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   // Funciones para el carrito
 const agregarAlCarrito = (producto) => {
@@ -28,50 +35,49 @@ const agregarAlCarrito = (producto) => {
 
   const vaciarCarrito = () => {
     setCarrito([]);
+    toast.info("Carrito vaciado ");
   };
 
-  const eliminarDelCarrito = (productoId) => {
-    setCarrito(carrito.filter(item => item.id !== productoId));
-  };
+ const eliminarDelCarrito = (productoId) => {
+  setCarrito(prev => prev.filter(item => item.id !== productoId));
+  toast.info("Producto eliminado ");
+};
   const toggleDrawer = () => setIsDrawerOpen(prev => !prev);
   const cerrarDrawer = () => setIsDrawerOpen(false);
 
 
-   const quitarCantidad = (idProducto) => {
-    const carritoActualizado = carrito.map(producto => {
-      if (producto.id === idProducto) {
-        const cantidadActual = producto.cantidad || 1;
-        if (cantidadActual === 1) {
-          return null;
-        }
-        return { ...producto, cantidad: cantidadActual - 1 };
-      }
-      return producto;
-    }).filter(producto => producto !== null);
-
-
-    setCarrito(carritoActualizado);
-  };
+const quitarCantidad = (idProducto) => {
+  setCarrito(prev => prev.map(producto => {
+    if (producto.id === idProducto) {
+      const cantidadActual = producto.cantidad || 1;
+      if (cantidadActual === 1) return null;
+      return { ...producto, cantidad: cantidadActual - 1 };
+    }
+    return producto;
+  }).filter(Boolean));
+};
 
     const agregarCantidad = (idProducto) => {
-    const nuevoCarrito = carrito.map(producto => {
-      if (producto.id === idProducto) {
-        return {
-          ...producto,
-          cantidad: (producto.cantidad || 1) + 1
-        };
-      }
-      return producto;
-    });
-    setCarrito(nuevoCarrito);
-  };
+  setCarrito(prev => prev.map(producto =>
+    producto.id === idProducto
+      ? { ...producto, cantidad: (producto.cantidad || 1) + 1 }
+      : producto
+  ));
+};
 
   const total = carrito.reduce((sum, item) => {
     const cantidad = item.cantidad || 1;
     return sum + (Number(item.precio) * cantidad);
   }, 0);
+  const totalItems = carrito.reduce((sum, item) => 
+  sum + (item.cantidad || 1), 0
+);
+const enviarPedidoPorWhatsapp = () => {
+  if (carrito.length === 0) {
+    toast.error("Tu carrito está vacío 🐾");
+    return;
+  }
 
-  const enviarPedidoPorWhatsapp = () => {
   // 1. Arma la lista de productos
   const items = carrito.map(item => 
     `• ${item.nombre} x${item.cantidad || 1} - $${(Number(item.precio) * (item.cantidad || 1)).toLocaleString('es-AR')}`
@@ -84,14 +90,11 @@ const agregarAlCarrito = (producto) => {
     `*Total: $${total.toLocaleString('es-AR')}*\n\n` +
     `¡Hola! Quiero realizar este pedido `;
 
-  // 3. Codifica el mensaje para la URL
   const mensajeCodificado = encodeURIComponent(mensaje);
+  const numeroWhatsapp = "5491128714704";
 
-  // 4. Abre WhatsApp con el mensaje
-  const numeroWhatsapp = "5491128714704"; // WP CAMI // CAMBIAR POR ANDERSON
   window.open(`https://wa.me/${numeroWhatsapp}?text=${mensajeCodificado}`, '_blank');
 };
- 
   // Valor que se provee a todos los componentes
   const value = {  
     // Carrito
@@ -106,6 +109,7 @@ const agregarAlCarrito = (producto) => {
 
     // f(x) total
     total ,
+    totalItems, 
     // WhatsApp
     enviarPedidoPorWhatsapp,
 

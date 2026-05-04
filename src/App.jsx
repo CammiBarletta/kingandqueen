@@ -10,11 +10,14 @@ import Footer from './components/Footer';
 import IniciarSesion from './pages/IniciarSesion';
 import Pagar from './pages/Pagar';
 import CartDrawer from './components/CartDrawer';
+import RutaProtegida from './pages/RutaProtegida';
+import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ProductsProvider } from './context/ProductsContext';
 import './index.css';
 import './Footer.css'
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -32,11 +35,24 @@ function App() {
               <Route path='/productos/:id' element={<DetalleProducto />} />
               <Route path="/contacto" element={<Contacto />} />
               <Route path='/iniciarsesion' element={<IniciarSesion />} />
-              <Route path='/pagar' element={<Pagar />} /> 
+              <Route path='/pagar' element={
+              <RutaProtegida>
+                <Pagar />
+              </RutaProtegida>
+                } />
             </Routes>
           </div>
           <Footer />
+          <ToastContainer
+             position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            closeOnClick
+            draggable
+             pauseOnHover
+              />
         </div>
+        
         </ProductsProvider>
       </AuthProvider>
     </CartProvider>
