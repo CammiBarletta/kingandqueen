@@ -128,39 +128,34 @@ export function ProductsProvider({ children }) {
 
   // ─── Acciones rápidas (sin abrir formulario) ─────────────────────────────────
   // Usan PATCH porque solo tocan un campo. Es más correcto que mandar
-  // el objeto entero con PUT cuando solo cambió un booleano.
 
-  const toggleDestacado = async (id) => {
-    const producto = productos.find(p => p.id === id);
-    if (!producto) return;
+ const toggleDestacado = async (id) => {
+  const producto = productos.find(p => p.id === id);
+  if (!producto) return;
+  const nuevoValor = !producto.destacado;
 
-    const nuevoValor = !producto.destacado;
+  setProductos(prev =>
+    prev.map(p => (p.id === id ? { ...p, destacado: nuevoValor } : p))
+  );
+  marcarActualizando(id);
 
-    // Actualización optimista: el cambio se ve de inmediato en la UI.
+  try {
+    const respuesta = await fetch(`${API_URL}/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ destacado: nuevoValor }),
+    });
+    if (!respuesta.ok) throw new Error('Error al actualizar destacado');
+    return nuevoValor; // ← única línea nueva
+  } catch (error) {
     setProductos(prev =>
-      prev.map(p => (p.id === id ? { ...p, destacado: nuevoValor } : p))
+      prev.map(p => (p.id === id ? { ...p, destacado: !nuevoValor } : p))
     );
-    marcarActualizando(id);
-
-    try {
-      const respuesta = await fetch(`${API_URL}/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ destacado: nuevoValor }),
-      });
-      if (!respuesta.ok) throw new Error('Error al actualizar destacado');
-    } catch (error) {
-      // Si falló, revertimos el cambio optimista.
-      setProductos(prev =>
-        prev.map(p => (p.id === id ? { ...p, destacado: !nuevoValor } : p))
-      );
-      console.error('Error al togglear destacado:', error);
-      throw error;
-    } finally {
-      desmarcarActualizando(id);
-    }
-  };
-
+    throw error;
+  } finally {
+    desmarcarActualizando(id);
+  }
+};
   const toggleActivo = async (id) => {
     const producto = productos.find(p => p.id === id);
     if (!producto) return;
