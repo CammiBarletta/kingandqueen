@@ -1,10 +1,9 @@
 // src/admin/pages/ProductForm.jsx
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { useProducts } from '../../context/ProductsContext';
-import { CATEGORIAS } from '../../constants/categories';
-
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useProducts } from "../context/ProductsContext";
+import { CATEGORIAS } from "../constants/categories";
 // ─── Estado inicial vacío ──────────────────────────────────────────────────────
 // Definido fuera del componente para que no se recree en cada render.
 // Todos los campos del modelo de producto, con sus defaults de formulario.

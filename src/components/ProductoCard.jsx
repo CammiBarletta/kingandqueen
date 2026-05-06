@@ -98,10 +98,11 @@ export default function ProductoCard({ producto }) {
       }}
     >
       <img
-        src={producto.avatar}
-        alt={producto.nombre}
-        style={estilos.imagen}
-      />
+     src={producto.imagen || producto.avatar}
+  alt={producto.nombre}
+  style={estilos.imagen}
+  onError={e => { e.currentTarget.style.background = "#f0f0f0"; e.currentTarget.src = ""; }}
+/>
       <div style={estilos.cuerpo}>
         {producto.categoria && (
           <span style={estilos.badge}>{producto.categoria}</span>
@@ -111,20 +112,20 @@ export default function ProductoCard({ producto }) {
         <p style={estilos.precio}>
           ${Number(producto.precio).toLocaleString("es-AR")}
         </p>
- 
-        <Link
-          to={`/productos/${producto.id}`}
-          state={{ producto }}
-          style={{ textDecoration: "none" }}
-        >
-          <button
-            style={estilos.btnGhost}
-            onMouseEnter={e => e.currentTarget.style.background = "#e8f8fb"}
-            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-          >
-            Más info
-          </button>
-        </Link>
+ <Link
+  to={`/productos/${producto.id}`}
+  state={{ producto }}
+  style={{
+    ...estilos.btnGhost,
+    display: "block",
+    textAlign: "center",
+    textDecoration: "none",
+    marginBottom: "8px",
+    boxSizing: "border-box",
+  }}
+>
+  Más info
+</Link>
  
         <button
           style={estilos.btnSolido}

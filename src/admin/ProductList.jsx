@@ -2,8 +2,8 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useProducts } from '../../context/ProductsContext';
-import { CATEGORIAS } from '../../constants/categories';
+import { useProducts } from '../context/ProductsContext';
+import { CATEGORIAS } from '../constants/categories';
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 // Una sola función para normalizar texto. Si mañana cambia la lógica,

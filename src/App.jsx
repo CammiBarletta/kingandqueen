@@ -15,6 +15,11 @@ import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ProductsProvider } from './context/ProductsContext';
+import Dashboard   from './admin/Dashboard';
+import ProductList from './admin/ProductList';
+import ProductForm from './admin/ProductForm';
+
+
 import './index.css';
 import './Footer.css'
 import "react-toastify/dist/ReactToastify.css";
@@ -28,19 +33,26 @@ function App() {
           <Navbar />
           <CartDrawer />
           <div style={{ paddingTop: "var(--navbar-height)",flex: "1 1 auto",minHeight: "60vh"}}>
-            <Routes>
-              <Route path='/' element={<Inicio />} />
-              <Route path='/nosotros' element={<Nosotros />} />
-              <Route path='/productos' element={<Productos />} />
-              <Route path='/productos/:id' element={<DetalleProducto />} />
-              <Route path="/contacto" element={<Contacto />} />
-              <Route path='/iniciarsesion' element={<IniciarSesion />} />
-              <Route path='/pagar' element={
-              <RutaProtegida>
-                <Pagar />
-              </RutaProtegida>
-                } />
-            </Routes>
+           <Routes>
+                {/* ── Rutas públicas ── */}
+                <Route path='/'            element={<Inicio />}         />
+                <Route path='/nosotros'    element={<Nosotros />}       />
+                <Route path='/productos'   element={<Productos />}      />
+                <Route path='/productos/:id' element={<DetalleProducto />} />
+                <Route path='/contacto'    element={<Contacto />}       />
+                <Route path='/iniciarsesion' element={<IniciarSesion />} />
+                <Route path='/pagar' element={
+                  <RutaProtegida><Pagar /></RutaProtegida>} />
+                {/* ── Rutas admin (protegidas) ── */}
+                <Route path='/admin' element={
+                  <RutaProtegida><Dashboard /></RutaProtegida> } />
+                <Route path='/admin/productos' element={
+                  <RutaProtegida><ProductList /></RutaProtegida> } />
+                <Route path='/admin/productos/nuevo' element={
+                  <RutaProtegida><ProductForm /></RutaProtegida>} />
+                <Route path='/admin/productos/:id/editar' element={
+                  <RutaProtegida><ProductForm /></RutaProtegida> } />
+              </Routes>
           </div>
           <Footer />
           <ToastContainer

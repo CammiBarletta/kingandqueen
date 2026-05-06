@@ -1,64 +1,71 @@
 import { useState, useEffect } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useCartContext } from "../context/CartContext";
 import { useAuthContext } from "../context/AuthContext";
 import "../Navbar.css";
 import { BsCart3 } from "react-icons/bs";
 
+/* LINKS NUEVOS (con Ofertas destacado) */
 const NAV_LINKS = [
   { to: "/", label: "Inicio" },
   { to: "/productos", label: "Productos" },
   { to: "/nosotros", label: "Nosotros" },
   { to: "/contacto", label: "Contacto" },
+
 ];
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen]     = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [scrolled, setScrolled]     = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [textoBusqueda, setTextoBusqueda] = useState("");
 
+  const navigate = useNavigate();
   const { carrito, vaciarCarrito, toggleDrawer } = useCartContext();
-  const { isAuthenticated, cerrarSesion: cerrarSesionAuth } = useAuthContext();
+  const { isAuthenticated, usuario, cerrarSesion: cerrarSesionAuth } = useAuthContext();
 
-  const totalItems  = carrito.reduce((sum, item) => sum + (item.cantidad || 1), 0);
+  const totalItems = carrito.reduce((sum, item) => sum + (item.cantidad || 1), 0);
   const totalPrecio = carrito.reduce(
-    (sum, item) => sum + Number(item.precio) * (item.cantidad || 1), 0
+    (sum, item) => sum + Number(item.precio) * (item.cantidad || 1),
+    0
   );
 
+  /* SCROLL */
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleCerrarSesion = () => {
-    cerrarSesionAuth();
-    vaciarCarrito();
-  };
-
   const closeMenu = () => {
     setMenuOpen(false);
     setSearchOpen(false);
   };
 
+  const handleCerrarSesion = () => {
+    cerrarSesionAuth();
+    vaciarCarrito();
+  };
+
+  /* BUSCADOR FUNCIONAL */
+  const handleBuscar = (e) => {
+    e.preventDefault();
+    const texto = textoBusqueda.trim();
+    if (!texto) return;
+    navigate(`/productos?q=${encodeURIComponent(texto)}`);
+    setTextoBusqueda("");
+    closeMenu();
+  };
+
   return (
     <header className={`navbar-header fixed-top ${scrolled ? "navbar-header--scrolled" : ""}`}>
-
       <div className="navbar-top">
-        {/*
-          navbar-top__inner tiene 3 hijos directos:
-          1. navbar-top__left  → columna izquierda (logo)
-          2. navbar-search     → columna central  (buscador)
-          3. navbar-top__right → columna derecha  (acceder + carrito)
-          El grid 1fr/auto/1fr hace que izq y der sean iguales,
-          y el buscador queda matemáticamente centrado.
-        */}
         <div className="navbar-top__inner">
 
-          {/* ── COLUMNA IZQUIERDA: Logo ── */}
+          {/* LOGO */}
           <div className="navbar-top__left">
             <Link to="/" className="navbar-logo" onClick={closeMenu}>
-              <svg className="navbar-logo__icon" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+              <svg className="navbar-logo__icon" viewBox="0 0 100 100" fill="currentColor">
                 <ellipse cx="20" cy="30" rx="10" ry="13"/>
                 <ellipse cx="80" cy="30" rx="10" ry="13"/>
                 <ellipse cx="38" cy="18" rx="9" ry="12"/>
@@ -72,128 +79,121 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* ── COLUMNA CENTRAL: Buscador ── */}
-          <div className="navbar-search">
+          {/* BUSCADOR DESKTOP */}
+          <form className="navbar-search" onSubmit={handleBuscar} role="search">
             <input
               type="text"
               className="navbar-search__input"
               placeholder="Buscar productos, marcas..."
+              value={textoBusqueda}
+              onChange={(e) => setTextoBusqueda(e.target.value)}
             />
-            <button className="navbar-search__btn" aria-label="Buscar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+            <button type="submit" className="navbar-search__btn" aria-label="Buscar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
             </button>
-          </div>
+          </form>
 
-          {/* ── COLUMNA DERECHA: Acceder + Carrito + Hamburguesa ── */}
+          {/* DERECHA */}
           <div className="navbar-top__right">
 
-            {/* Lupa mobile — oculta en desktop, visible en mobile */}
+            {/* LUPA MOBILE */}
             <button
               className="navbar-icon-btn navbar-search-toggle"
               onClick={() => setSearchOpen(!searchOpen)}
               aria-label="Buscar"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
+              🔍
             </button>
 
-            {/* Acceder / Salir */}
+            {/* USUARIO */}
             {isAuthenticated ? (
-              <button className="navbar-actions__auth-btn" onClick={handleCerrarSesion}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-                </svg>
-                <span className="navbar-actions__label">Salir</span>
-              </button>
+              <div className="navbar-actions__user">
+                <span className="navbar-actions__username">
+                  Hola, {usuario?.nombre ?? "Admin"}
+                </span>
+                <button className="navbar-actions__auth-btn" onClick={handleCerrarSesion}>
+                  Salir
+                </button>
+              </div>
             ) : (
               <Link to="/iniciarsesion" className="navbar-actions__auth-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-                <span className="navbar-actions__label">Acceder</span>
+                Acceder
               </Link>
             )}
 
-            {/* Carrito */}
-            <button 
-              onClick={toggleDrawer} 
-              className="navbar-actions__cart border-0 bg-transparent p-0" 
-                aria-label="Abrir carrito"
-                >
-                <div className="navbar-actions__cart-icon-wrap">
-                <BsCart3 size={24} /> 
-    
-               {totalItems > 0 && (
-                <span className="navbar-actions__cart-badge">
-                 {totalItems}
-                </span>
+            {/* CARRITO MEJORADO */}
+            <button
+              onClick={toggleDrawer}
+              className="navbar-actions__cart border-0 bg-transparent p-0"
+              aria-label="Abrir carrito"
+              title="Ver carrito"
+            >
+              <div className="navbar-actions__cart-icon-wrap">
+                <BsCart3 size={24} />
+                {totalItems > 0 && (
+                  <span
+                    className="navbar-actions__cart-badge"
+                    aria-live="polite"
+                    key={totalItems}
+                  >
+                    {totalItems}
+                  </span>
                 )}
-                </div>
-  
-            <span className="navbar-actions__cart-price">
-              ${totalPrecio.toFixed(2)}
-            </span>
+              </div>
+              <span className="navbar-actions__cart-price">
+                ${totalPrecio.toFixed(2)}
+              </span>
             </button>
 
-            {/* Hamburguesa mobile */}
+            {/* HAMBURGUESA */}
             <button
               className={`navbar-hamburger ${menuOpen ? "navbar-hamburger--open" : ""}`}
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-              aria-expanded={menuOpen}
             >
               <span /><span /><span />
             </button>
-
           </div>
         </div>
 
-        {/* Buscador expandible mobile */}
+        {/* BUSCADOR MOBILE */}
         {searchOpen && (
-          <div className="navbar-search-mobile">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-            </svg>
+          <form className="navbar-search-mobile" onSubmit={handleBuscar}>
             <input
               type="text"
-              className="navbar-search-mobile__input"
               placeholder="Buscar productos..."
+              value={textoBusqueda}
+              onChange={(e) => setTextoBusqueda(e.target.value)}
               autoFocus
             />
-          </div>
+          </form>
         )}
+
+        {/* NAV LINKS */}
+        <nav className={`navbar-nav ${menuOpen ? "navbar-nav--open" : ""}`}>
+          <ul className="navbar-nav__list">
+            {NAV_LINKS.map(({ to, label, destacado }) => (
+              <li key={to} className="navbar-nav__item">
+                <NavLink
+                  to={to}
+                  end={to === "/"}
+                  className={({ isActive }) =>
+                    `navbar-nav__link 
+                     ${isActive ? "navbar-nav__link--active" : ""} 
+                     ${destacado ? "navbar-nav__link--oferta" : ""}`
+                  }
+                  onClick={closeMenu}
+                >
+                  {label}
+                  <span className="navbar-nav__underline" />
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
-
-      {/* ── NIVEL 2: Navegación ── */}
-      <nav
-        className={`navbar-nav ${menuOpen ? "navbar-nav--open" : ""}`}
-        aria-label="Navegación principal"
-      >
-        <ul className="navbar-nav__list">
-          {NAV_LINKS.map(({ to, label }) => (
-            <li key={to} className="navbar-nav__item">
-              <NavLink
-                to={to}
-                end={to === "/"}
-                className={({ isActive }) =>
-                  `navbar-nav__link ${isActive ? "navbar-nav__link--active" : ""}`
-                }
-                onClick={closeMenu}
-              >
-                {label}
-                <span className="navbar-nav__underline" aria-hidden="true" />
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
     </header>
   );
 }
