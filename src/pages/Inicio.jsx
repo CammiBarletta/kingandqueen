@@ -1,77 +1,71 @@
 import InicioBanner from "../components/InicioBanner";
 import { useProducts } from "../context/ProductsContext";
 import ProductoCard from "../components/ProductoCard";
+import ProductCarousel from "../components/ProductCarousel";
 import { Link } from "react-router-dom";
+import "./Inicio.css";
 
 export default function Inicio() {
   const { productosDestacados, productosFiltrados, cargando } = useProducts();
 
   if (cargando) return null;
 
-  // mostramos pocos productos en home (estilo ecommerce real)
   const masProductos = productosFiltrados.slice(0, 8);
 
   return (
     <>
       <InicioBanner />
 
-      <div className="container mt-5">
+      <div className="inicio-container">
 
-        {/* DESTACADOS */}
-        <section style={{ marginBottom: "60px" }}>
-          <h2 style={{ marginBottom: "20px" }}>⭐ Productos destacados</h2>
+        {/* ── Sección: Destacados ── */}
+        <section className="inicio-section">
+          <div className="inicio-section__header">
+            <div className="inicio-section__label">Selección especial</div>
+            <h2 className="inicio-section__title">Productos destacados</h2>
+            <div className="inicio-section__divider" />
+          </div>
 
-          {productosDestacados.length === 0 ? (
-            <p style={{ opacity: 0.6 }}>
-              Próximamente productos destacados…
-            </p>
-          ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-                gap: "20px",
-              }}
-            >
-              {productosDestacados.slice(0, 4).map((producto) => (
-                <ProductoCard key={producto.id} producto={producto} />
-              ))}
-            </div>
-          )}
+          <ProductCarousel
+            productos={
+              productosDestacados.length > 0
+                ? productosDestacados.slice(0, 6)
+                : productosFiltrados.slice(0, 6)
+            }
+          />
         </section>
 
-        {/* MAS PRODUCTOS */}
-        <section style={{ marginBottom: "50px" }}>
-          <h2 style={{ marginBottom: "20px" }}>Más productos</h2>
+        {/* ── Separador decorativo ── */}
+        <div className="inicio-separator">
+          <span className="inicio-separator__line" />
+          <span className="inicio-separator__icon">✦</span>
+          <span className="inicio-separator__line" />
+        </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-              gap: "20px",
-            }}
-          >
+        {/* ── Sección: Más productos ── */}
+        <section className="inicio-section">
+          <div className="inicio-section__header">
+            <div className="inicio-section__label">Catálogo</div>
+            <h2 className="inicio-section__title">Más productos</h2>
+            <div className="inicio-section__divider" />
+          </div>
+
+          <div className="inicio-grid">
             {masProductos.map((producto) => (
-              <ProductoCard key={producto.id} producto={producto} />
+              <ProductoCard key={producto.nombre} producto={producto} />
             ))}
           </div>
         </section>
 
-        {/* CTA VER TODOS */}
-        <div style={{ textAlign: "center", marginBottom: "60px" }}>
-          <Link
-            to="/productos"
-            style={{
-              padding: "14px 28px",
-              backgroundColor: "#00bcd4",
-              color: "white",
-              borderRadius: "8px",
-              textDecoration: "none",
-              fontWeight: "bold",
-              fontSize: "18px",
-            }}
-          >
-            Ver todos los productos →
+        {/* ── CTA final ── */}
+        <div className="inicio-cta">
+          <p className="inicio-cta__sub">¿No encontraste lo que buscabas?</p>
+          <Link to="/productos" className="inicio-cta__btn">
+            Ver catálogo completo
+            <svg className="inicio-cta__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
           </Link>
         </div>
 

@@ -5,6 +5,7 @@ const API_URL = 'https://698bbfdb6c6f9ebe57bd76ba.mockapi.io/kingandqueen/produc
 export const ProductsContext = createContext();
 
 export function ProductsProvider({ children }) {
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("todas");
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -54,15 +55,22 @@ export function ProductsProvider({ children }) {
 
   // ─── Valores derivados ────────────────────────────────────────────────────────
 
-  const productosFiltrados = useMemo(
-    () => productos.filter(p => p.activo !== false),
-    [productos]
-  );
+ const productosFiltrados = useMemo(() => {
+  const activos = productos.filter(p => p.activo !== false);
+
+  if (categoriaSeleccionada === "todas") return activos;
+
+  return activos.filter(p => p.categoria === categoriaSeleccionada);
+}, [productos, categoriaSeleccionada]);
 
   const productosDestacados = useMemo(
     () => productosFiltrados.filter(p => p.destacado === true),
     [productosFiltrados]
   );
+  const categorias = useMemo(() => {
+  const lista = productos.map(p => p.categoria);
+  return ["todas", ...new Set(lista)];
+}, [productos]);
 
   // ─── CRUD ─────────────────────────────────────────────────────────────────────
 
@@ -246,6 +254,9 @@ export function ProductsProvider({ children }) {
         toggleDestacado,
         toggleActivo,
         validar,
+        categorias,
+        categoriaSeleccionada,
+        setCategoriaSeleccionada,
       }}
     >
       {children}
