@@ -15,18 +15,22 @@ export function CartProvider({ children }) {
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }, [carrito]);
 
+  // ─── Carrito ──────────────────────────────────────────────────────────────────
+
   const agregarAlCarrito = (producto) => {
     setCarrito(prevCarrito => {
-      const productoExistente = prevCarrito.find(item => item.id === producto.id);
+      const idNormalizado = String(producto.id);
+      const productoExistente = prevCarrito.find(item => item.id === idNormalizado);
+
       if (productoExistente) {
         return prevCarrito.map(item =>
-          item.id === producto.id
+          item.id === idNormalizado
             ? { ...item, cantidad: (item.cantidad || 1) + 1 }
             : item
         );
       } else {
         return [...prevCarrito, {
-          id: producto.id,
+          id: idNormalizado,
           nombre: producto.nombre,
           precio: producto.precio,
           imagen: producto.imagen || producto.avatar,
@@ -37,38 +41,38 @@ export function CartProvider({ children }) {
     toast.success(`${producto.nombre} agregado al carrito 🐾`);
   };
 
+  const eliminarDelCarrito = (productoId) => {
+    setCarrito(prev => prev.filter(item => item.id !== String(productoId)));
+    toast.info("Producto eliminado");
+  };
+
   const vaciarCarrito = () => {
     setCarrito([]);
     toast.info("Carrito vaciado");
   };
 
-  const eliminarDelCarrito = (productoId) => {
-    setCarrito(prev => prev.filter(item => item.id !== productoId));
-    toast.info("Producto eliminado");
-  };
-
-  const quitarCantidad = (idProducto) => {
-    setCarrito(prev =>
-      prev.map(producto => {
-        if (producto.id === idProducto) {
-          const cantidadActual = producto.cantidad || 1;
-          if (cantidadActual === 1) return null;
-          return { ...producto, cantidad: cantidadActual - 1 };
-        }
-        return producto;
-      }).filter(Boolean)
-    );
-  };
-
   const agregarCantidad = (idProducto) => {
     setCarrito(prev =>
       prev.map(producto =>
-        producto.id === idProducto
+        producto.id === String(idProducto)
           ? { ...producto, cantidad: (producto.cantidad || 1) + 1 }
           : producto
       )
     );
   };
+
+  const quitarCantidad = (idProducto) => {
+    setCarrito(prev =>
+      prev.map(producto => {
+        if (producto.id !== String(idProducto)) return producto;
+        const cantidadActual = producto.cantidad || 1;
+        if (cantidadActual === 1) return null;
+        return { ...producto, cantidad: cantidadActual - 1 };
+      }).filter(Boolean)
+    );
+  };
+
+  // ─── Valores derivados ────────────────────────────────────────────────────────
 
   const total = useMemo(
     () => carrito.reduce((sum, item) => sum + (Number(item.precio) * (item.cantidad || 1)), 0),
@@ -80,38 +84,47 @@ export function CartProvider({ children }) {
     [carrito]
   );
 
+  // ─── WhatsApp ─────────────────────────────────────────────────────────────────
+
   const enviarPedidoPorWhatsapp = () => {
     if (carrito.length === 0) {
       toast.error("Tu carrito está vacío 🐾");
       return;
     }
 
-    const sanitizar = (texto) => texto.replace(/[*_~`]/g, '');
+    const sanitizar = (texto) => texto.replace(/[*_~`]/g, "");
 
-    const items = carrito.map(item =>
-      `• ${sanitizar(item.nombre)} x${item.cantidad || 1} - $${(Number(item.precio) * (item.cantidad || 1)).toLocaleString('es-AR')}`
-    ).join('\n');
+    const items = carrito
+      .map(item =>
+        `• ${sanitizar(item.nombre)} x${item.cantidad || 1} - $${(
+          Number(item.precio) * (item.cantidad || 1)
+        ).toLocaleString("es-AR")}`
+      )
+      .join("\n");
 
     const mensaje =
       `*Nuevo pedido King & Queen*\n\n` +
       `${items}\n\n` +
-      `*Total: $${total.toLocaleString('es-AR')}*\n\n` +
+      `*Total: $${total.toLocaleString("es-AR")}*\n\n` +
       `¡Hola! Quiero realizar este pedido`;
 
-    const mensajeCodificado = encodeURIComponent(mensaje);
     const numeroWhatsapp = "5491128714704";
-    window.open(`https://wa.me/${numeroWhatsapp}?text=${mensajeCodificado}`, '_blank');
+    window.open(`https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent(mensaje)}`, "_blank");
   };
+
+  // ─── Drawer ───────────────────────────────────────────────────────────────────
 
   const toggleDrawer = () => setIsDrawerOpen(prev => !prev);
   const cerrarDrawer = () => setIsDrawerOpen(false);
+
+  // ─── Provider ─────────────────────────────────────────────────────────────────
 
   return (
     <CartContext.Provider value={{
       carrito,
       agregarAlCarrito,
-      vaciarCarrito,
       eliminarDelCarrito,
+      vaciarCarrito,
       agregarCantidad,
       quitarCantidad,
       total,

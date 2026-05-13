@@ -85,7 +85,7 @@ const handlePagar = () => {
               >
                 {/* Imagen */}
                 <img
-                  src={item.avatar}
+                  src={item.imagen}
                   alt={item.nombre}
                   style={{ width: "70px", height: "70px", objectFit: "cover", borderRadius: "8px" }}
                 />

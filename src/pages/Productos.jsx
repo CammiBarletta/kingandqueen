@@ -10,7 +10,7 @@ export default function Productos() {
 
   // Lee el query del buscador del Navbar (?q=...)
   const queryURL = searchParams.get("q") || "";
-const [textoBusqueda, setTextoBusqueda] = useState(queryURL);
+const [textoBusqueda, setTextoBusqueda] = useState(queryURL);1
 useEffect(() => {
   setTextoBusqueda(searchParams.get("q") || "");
 }, [searchParams]);
@@ -65,6 +65,7 @@ useEffect(() => {
 
   if (cargando) return <p className="container mt-4">Cargando productos...</p>;
   if (error) return <p className="container mt-4">{error}</p>;
+  console.log("primer producto:", productosFiltrados[0]);
 
   return (
     <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "40px 24px 80px" }}>
@@ -187,7 +188,7 @@ useEffect(() => {
           gap: "24px",
         }}>
           {productosMostrados.map((producto) => (
-            <ProductoCard key={producto.nombre} producto={producto} />
+           <ProductoCard key={producto.id} producto={producto} />
           ))}
         </div>
       )}

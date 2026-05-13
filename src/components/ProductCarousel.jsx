@@ -151,8 +151,8 @@ export default function ProductCarousel({ productos = [] }) {
         <style>{`.carousel-no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
 
         {productos.map((producto) => (
-          <div
-            key={producto.nombre}
+         <div
+             key={producto.id}
             style={{
               flex: "0 0 260px",
               width: "260px",

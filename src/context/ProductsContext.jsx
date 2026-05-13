@@ -1,78 +1,92 @@
 import { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
-
-const API_URL = 'https://698bbfdb6c6f9ebe57bd76ba.mockapi.io/kingandqueen/productos';
+import {
+  collection,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+} from 'firebase/firestore';
+import { db } from '../firebase';
 
 export const ProductsContext = createContext();
 
+const COLECCION = 'productos';
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+const normalizarProducto = (producto) => ({
+  destacado: false,
+  activo: true,
+  stock: null,
+  precioAnterior: null,
+  orden: 0,
+  descripcion: '',
+  categoria: 'general',
+  ...producto,
+});
+
+// ─── Provider ─────────────────────────────────────────────────────────────────
+
 export function ProductsProvider({ children }) {
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("todas");
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todas');
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [actualizandoIds, setActualizandoIds] = useState(new Set());
 
-  // ─── Helpers internos ────────────────────────────────────────────────────────
-
   const marcarActualizando = (id) =>
-    setActualizandoIds(prev => new Set(prev).add(id));
+    setActualizandoIds((prev) => new Set(prev).add(id));
 
   const desmarcarActualizando = (id) =>
-    setActualizandoIds(prev => {
+    setActualizandoIds((prev) => {
       const siguiente = new Set(prev);
       siguiente.delete(id);
       return siguiente;
     });
 
-  const normalizarProducto = (producto) => ({
-    destacado: false,
-    activo: true,
-    stock: null,
-    precioAnterior: null,
-    orden: 0,
-    descripcion: "",
-    categoria: "general",
-    ...producto,
-  });
-
-  // ─── Carga inicial ────────────────────────────────────────────────────────────
+  // ─── Escucha en tiempo real ───────────────────────────────────────────────
 
   useEffect(() => {
-    const cargarProductos = async () => {
-      setError(null); // ← acá adentro, no suelto afuera
-      try {
-        const respuesta = await fetch(API_URL);
-        if (!respuesta.ok) throw new Error('Error al cargar productos');
-        const datos = await respuesta.json();
-        setProductos(datos.map(normalizarProducto));
-      } catch (error) {
+    setCargando(true);
+    const unsub = onSnapshot(
+      collection(db, COLECCION),
+      (snapshot) => {
+        const datos = snapshot.docs.map((docSnap) =>
+          normalizarProducto({ id: docSnap.id, ...docSnap.data() })
+        );
+        setProductos(datos);
+        setCargando(false);
+      },
+      (err) => {
+        console.error('Error al escuchar productos:', err);
         setError('No se pudieron cargar los productos 😢');
-      } finally {
         setCargando(false);
       }
-    };
-    cargarProductos();
+    );
+    return () => unsub(); // limpia el listener al desmontar
   }, []);
 
-  // ─── Valores derivados ────────────────────────────────────────────────────────
+  // ─── Valores derivados ────────────────────────────────────────────────────
 
- const productosFiltrados = useMemo(() => {
-  const activos = productos.filter(p => p.activo !== false);
-
-  if (categoriaSeleccionada === "todas") return activos;
-
-  return activos.filter(p => p.categoria === categoriaSeleccionada);
-}, [productos, categoriaSeleccionada]);
+  const productosFiltrados = useMemo(() => {
+    const activos = productos.filter((p) => p.activo !== false);
+    if (categoriaSeleccionada === 'todas') return activos;
+    return activos.filter((p) => p.categoria === categoriaSeleccionada);
+  }, [productos, categoriaSeleccionada]);
 
   const productosDestacados = useMemo(
-    () => productosFiltrados.filter(p => p.destacado === true),
+    () => productosFiltrados.filter((p) => p.destacado === true),
     [productosFiltrados]
   );
-  const categorias = useMemo(() => {
-  const lista = productos.map(p => p.categoria);
-  return ["todas", ...new Set(lista)];
-}, [productos]);
 
-  // ─── CRUD ─────────────────────────────────────────────────────────────────────
+  const categorias = useMemo(() => {
+    const lista = productos.map((p) => p.categoria);
+    return ['todas', ...new Set(lista)];
+  }, [productos]);
+
+  // ─── CRUD ─────────────────────────────────────────────────────────────────
 
   const agregarProducto = useCallback(async (nuevoProducto) => {
     const productoConDefaults = {
@@ -81,119 +95,78 @@ export function ProductsProvider({ children }) {
       stock: null,
       precioAnterior: null,
       orden: 0,
-      creadoEn: new Date().toISOString().split('T')[0],
+      creadoEn: serverTimestamp(),
       ...nuevoProducto,
     };
     try {
-      const respuesta = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productoConDefaults),
-      });
-      if (!respuesta.ok) throw new Error('Error al agregar producto');
-      const data = await respuesta.json();
-      setProductos(prev => [...prev, normalizarProducto(data)]);
-      return data;
-    } catch (error) {
-      console.error('Error al agregar producto:', error);
-      throw error;
+      const docRef = await addDoc(collection(db, COLECCION), productoConDefaults);
+      return { id: docRef.id, ...productoConDefaults };
+    } catch (err) {
+      console.error('Error al agregar producto:', err);
+      throw err;
     }
-  }, []); // sin deps — no usa productos
+  }, []);
 
   const editarProducto = useCallback(async (productoActualizado) => {
-    marcarActualizando(productoActualizado.id);
+    const { id, ...datos } = productoActualizado;
+    marcarActualizando(id);
     try {
-      const respuesta = await fetch(`${API_URL}/${productoActualizado.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productoActualizado),
-      });
-      if (!respuesta.ok) throw new Error('Error al editar producto');
-      const data = await respuesta.json();
-      setProductos(prev =>
-        prev.map(p => (p.id === productoActualizado.id ? normalizarProducto(data) : p))
-      );
-      return data;
-    } catch (error) {
-      console.error('Error al editar producto:', error);
-      throw error;
+      await updateDoc(doc(db, COLECCION, id), datos);
+      return productoActualizado;
+    } catch (err) {
+      console.error('Error al editar producto:', err);
+      throw err;
     } finally {
-      desmarcarActualizando(productoActualizado.id);
+      desmarcarActualizando(id);
     }
-  }, []); // sin deps — usa setter funcional
+  }, []);
 
   const eliminarProducto = useCallback(async (id) => {
     marcarActualizando(id);
     try {
-      const respuesta = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-      if (!respuesta.ok) throw new Error('Error al eliminar producto');
-      setProductos(prev => prev.filter(p => p.id !== id));
-    } catch (error) {
-      console.error('Error al eliminar producto:', error);
-      throw error;
+      await deleteDoc(doc(db, COLECCION, id));
+    } catch (err) {
+      console.error('Error al eliminar producto:', err);
+      throw err;
     } finally {
       desmarcarActualizando(id);
     }
-  }, []); // sin deps — usa setter funcional
+  }, []);
 
-  // ─── Acciones rápidas ─────────────────────────────────────────────────────────
+  // ─── Acciones rápidas ─────────────────────────────────────────────────────
 
   const toggleDestacado = useCallback(async (id) => {
-    const producto = productos.find(p => p.id === id);
+    const producto = productos.find((p) => p.id === id);
     if (!producto) return;
     const nuevoValor = !producto.destacado;
-
     marcarActualizando(id);
-    setProductos(prev =>
-      prev.map(p => (p.id === id ? { ...p, destacado: nuevoValor } : p))
-    );
-
     try {
-      const respuesta = await fetch(`${API_URL}/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ destacado: nuevoValor }),
-      });
-      if (!respuesta.ok) throw new Error('Error al actualizar destacado');
+      await updateDoc(doc(db, COLECCION, id), { destacado: nuevoValor });
       return nuevoValor;
-    } catch (error) {
-      setProductos(prev =>
-        prev.map(p => (p.id === id ? { ...p, destacado: !nuevoValor } : p))
-      );
-      throw error;
+    } catch (err) {
+      console.error('Error al actualizar destacado:', err);
+      throw err;
     } finally {
       desmarcarActualizando(id);
     }
-  }, [productos]); // necesita productos para el .find()
+  }, [productos]);
 
   const toggleActivo = useCallback(async (id) => {
-    const producto = productos.find(p => p.id === id);
+    const producto = productos.find((p) => p.id === id);
     if (!producto) return;
     const nuevoValor = !producto.activo;
-
     marcarActualizando(id);
-    setProductos(prev =>
-      prev.map(p => (p.id === id ? { ...p, activo: nuevoValor } : p))
-    );
-
     try {
-      const respuesta = await fetch(`${API_URL}/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ activo: nuevoValor }),
-      });
-      if (!respuesta.ok) throw new Error('Error al actualizar estado');
-    } catch (error) {
-      setProductos(prev =>
-        prev.map(p => (p.id === id ? { ...p, activo: !nuevoValor } : p))
-      );
-      throw error;
+      await updateDoc(doc(db, COLECCION, id), { activo: nuevoValor });
+    } catch (err) {
+      console.error('Error al actualizar estado:', err);
+      throw err;
     } finally {
       desmarcarActualizando(id);
     }
-  }, [productos]); // necesita productos para el .find()
+  }, [productos]);
 
-  // ─── Validación ───────────────────────────────────────────────────────────────
+  // ─── Validación ───────────────────────────────────────────────────────────
 
   const validar = useCallback((producto) => {
     const errores = {};
@@ -237,7 +210,7 @@ export function ProductsProvider({ children }) {
     return { esValido: Object.keys(errores).length === 0, errores };
   }, []);
 
-  // ─── Valor del contexto ───────────────────────────────────────────────────────
+  // ─── Valor del contexto ───────────────────────────────────────────────────
 
   return (
     <ProductsContext.Provider

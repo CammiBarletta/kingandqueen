@@ -30,7 +30,7 @@ export default function DetalleProducto() {
         <div className="col-12 col-md-8 col-lg-6">
           <div className="card shadow-sm">
             <img
-              src={producto.avatar}
+              src={producto.imagen || producto.avatar}
               alt={producto.nombre}
               className="card-img-top"
               style={{ height: "350px", objectFit: "cover" }}
