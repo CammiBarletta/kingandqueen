@@ -3,11 +3,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 
 export default function IniciarSesion() {
-  const { iniciarSesion } = useAuthContext();
+  const { iniciarSesion, registrar } = useAuthContext();
   const navigate = useNavigate();
   const ubicacion = useLocation();
   const desde = ubicacion.state?.desde || "/";
 
+  const [modo, setModo] = useState("login"); // "login" | "registro"
   const [form, setForm] = useState({ nombre: "", email: "", password: "" });
   const [errores, setErrores] = useState({});
   const [cargando, setCargando] = useState(false);
@@ -15,54 +16,105 @@ export default function IniciarSesion() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
-    // Limpia el error del campo cuando empieza a escribir
-    if (errores[name]) {
-      setErrores(prev => ({ ...prev, [name]: "" }));
-    }
+    if (errores[name]) setErrores(prev => ({ ...prev, [name]: "" }));
+  };
+
+  const cambiarModo = (nuevoModo) => {
+    setModo(nuevoModo);
+    setForm({ nombre: "", email: "", password: "" });
+    setErrores({});
   };
 
   const validar = () => {
-    const nuevosErrores = {};
-    if (!form.nombre.trim()) 
-      nuevosErrores.nombre = "El nombre es obligatorio.";
-    if (!form.email.trim()) 
-      nuevosErrores.email = "El email es obligatorio.";
+    const e = {};
+    if (modo === "registro" && !form.nombre.trim())
+      e.nombre = "El nombre es obligatorio.";
+    if (!form.email.trim())
+      e.email = "El email es obligatorio.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      nuevosErrores.email = "El email no es válido.";
-    if (!form.password) 
-      nuevosErrores.password = "La contraseña es obligatoria.";
+      e.email = "El email no es válido.";
+    if (!form.password)
+      e.password = "La contraseña es obligatoria.";
     else if (form.password.length < 6)
-      nuevosErrores.password = "Mínimo 6 caracteres.";
-    return nuevosErrores;
+      e.password = "Mínimo 6 caracteres.";
+    return e;
   };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const nuevosErrores = validar();
 
-  if (Object.keys(nuevosErrores).length > 0) {
-    setErrores(nuevosErrores);
-    return;
-  }
+  // Traduce los errores de Firebase a español
+  const traducirError = (codigo) => {
+    const erroresFirebase = {
+      "auth/user-not-found":      "No existe una cuenta con ese email.",
+      "auth/wrong-password":      "Contraseña incorrecta.",
+      "auth/email-already-in-use":"Ese email ya está registrado.",
+      "auth/too-many-requests":   "Demasiados intentos. Esperá unos minutos.",
+      "auth/network-request-failed": "Error de conexión. Revisá tu internet.",
+      "auth/invalid-credential":  "Email o contraseña incorrectos.",
+    };
+    return erroresFirebase[codigo] || "Ocurrió un error. Intentá de nuevo.";
+  };
 
-  setCargando(true);
-  try {
-    await iniciarSesion(form.nombre, form.email);
-    navigate(desde, { replace: true });
-  } catch (error) {
-    setErrores({ general: "Hubo un error al iniciar sesión." });
-  } finally {
-    setCargando(false);
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const nuevosErrores = validar();
+    if (Object.keys(nuevosErrores).length > 0) {
+      setErrores(nuevosErrores);
+      return;
+    }
+
+    setCargando(true);
+    try {
+      if (modo === "login") {
+        await iniciarSesion(form.email, form.password);
+      } else {
+        await registrar(form.nombre, form.email, form.password);
+      }
+      navigate(desde, { replace: true });
+    } catch (error) {
+      setErrores({ general: traducirError(error.code) });
+    } finally {
+      setCargando(false);
+    }
+  };
+
   return (
     <div className="container mt-5" style={{ maxWidth: "420px" }}>
 
       {/* Header */}
       <div className="text-center mb-4">
-        <h2 style={{ color: "#2C2C2C", fontWeight: "700" }}>Bienvenido </h2>
+        <h2 style={{ color: "#2C2C2C", fontWeight: "700" }}>
+          {modo === "login" ? "Bienvenido" : "Crear cuenta"}
+        </h2>
         <p className="text-muted" style={{ fontSize: "0.9rem" }}>
-          Ingresá para continuar con tu compra
+          {modo === "login"
+            ? "Ingresá para continuar con tu compra"
+            : "Registrate para poder comprar"}
         </p>
+      </div>
+
+      {/* Toggle Login / Registro */}
+      <div className="d-flex mb-4" style={{ borderBottom: "2px solid #eee" }}>
+        {["login", "registro"].map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => cambiarModo(m)}
+            style={{
+              flex: 1,
+              background: "none",
+              border: "none",
+              paddingBottom: "10px",
+              fontWeight: modo === m ? "700" : "400",
+              color: modo === m ? "#4DB8C8" : "#999",
+              borderBottom: modo === m ? "2px solid #4DB8C8" : "none",
+              marginBottom: "-2px",
+              cursor: "pointer",
+              textTransform: "capitalize",
+              transition: "all 0.2s",
+            }}
+          >
+            {m === "login" ? "Iniciar sesión" : "Registrarse"}
+          </button>
+        ))}
       </div>
 
       {/* Error general */}
@@ -72,22 +124,24 @@ const handleSubmit = async (e) => {
 
       <form onSubmit={handleSubmit} noValidate>
 
-        {/* Nombre */}
-        <div className="mb-3">
-          <label className="form-label fw-semibold">Nombre</label>
-          <input
-            type="text"
-            name="nombre"
-            className={`form-control ${errores.nombre ? "is-invalid" : ""}`}
-            value={form.nombre}
-            onChange={handleChange}
-            placeholder="Tu nombre"
-            autoComplete="name"
-          />
-          {errores.nombre && (
-            <div className="invalid-feedback">{errores.nombre}</div>
-          )}
-        </div>
+        {/* Nombre — solo en registro */}
+        {modo === "registro" && (
+          <div className="mb-3">
+            <label className="form-label fw-semibold">Nombre</label>
+            <input
+              type="text"
+              name="nombre"
+              className={`form-control ${errores.nombre ? "is-invalid" : ""}`}
+              value={form.nombre}
+              onChange={handleChange}
+              placeholder="Tu nombre"
+              autoComplete="name"
+            />
+            {errores.nombre && (
+              <div className="invalid-feedback">{errores.nombre}</div>
+            )}
+          </div>
+        )}
 
         {/* Email */}
         <div className="mb-3">
@@ -116,40 +170,40 @@ const handleSubmit = async (e) => {
             value={form.password}
             onChange={handleChange}
             placeholder="Mínimo 6 caracteres"
-            autoComplete="current-password"
+            autoComplete={modo === "login" ? "current-password" : "new-password"}
           />
           {errores.password && (
             <div className="invalid-feedback">{errores.password}</div>
           )}
         </div>
 
-        {/* Botones */}
+        {/* Botón principal */}
         <button
           type="submit"
           className="btn w-100 mb-2"
-          style={{ backgroundColor: "#4DB8C8", color: "white", borderRadius: "8px" }}
+          style={{
+            backgroundColor: "#4DB8C8",
+            color: "white",
+            borderRadius: "8px",
+            opacity: cargando ? 0.7 : 1,
+          }}
           disabled={cargando}
         >
-          {cargando ? "Ingresando..." : "Ingresar"}
+          {cargando
+            ? "Procesando..."
+            : modo === "login" ? "Ingresar" : "Crear cuenta"}
         </button>
 
         <button
           type="button"
           className="btn btn-outline-secondary w-100"
-         onClick={() => navigate(desde, { replace: true })}
+          onClick={() => navigate(desde, { replace: true })}
           disabled={cargando}
         >
           Cancelar
         </button>
 
       </form>
-
-      {/* Nota aclaratoria */}
-      <p className="text-center text-muted mt-4" style={{ fontSize: "0.78rem" }}>
-        Este es un sistema de autenticación de práctica.
-        <br />No uses contraseñas reales.
-      </p>
-
     </div>
   );
 }
