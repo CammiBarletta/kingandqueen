@@ -12,6 +12,28 @@ const NAV_LINKS = [
   { to: "/contacto", label: "Contacto" },
 ];
 
+/* ── Íconos SVG inline minimalistas ── */
+const IconSearch = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.35-4.35" />
+  </svg>
+);
+
+const IconUser = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
+const IconSettings = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </svg>
+);
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -62,9 +84,9 @@ export default function Navbar() {
           <div className="navbar-top__left">
             <Link to="/" className="navbar-logo" onClick={closeMenu}>
               <div className="navbar-logo__text">
-    <span className="navbar-logo__name">King & Queen</span>
-    <span className="navbar-logo__sub">PET SHOP</span>
-  </div>
+                <span className="navbar-logo__name">King & Queen</span>
+                <span className="navbar-logo__sub">PET SHOP</span>
+              </div>
             </Link>
           </div>
 
@@ -104,18 +126,20 @@ export default function Navbar() {
               onClick={() => setSearchOpen(!searchOpen)}
               aria-label="Buscar"
             >
-              🔍
+              <IconSearch />
             </button>
 
             {/* USUARIO */}
             {isAuthenticated ? (
               <div className="navbar-actions__user">
                 <span className="navbar-actions__username">
-                  👋 {usuario?.nombre?.split(" ")[0] ?? "Usuario"}
+                  <IconUser />
+                  {usuario?.nombre?.split(" ")[0] ?? "Usuario"}
                 </span>
                 {usuario?.isAdmin && (
                   <Link to="/admin" className="navbar-actions__admin-btn" onClick={closeMenu}>
-                    ⚙️ Panel
+                    <IconSettings />
+                    Panel
                   </Link>
                 )}
                 <button className="navbar-actions__auth-btn" onClick={handleCerrarSesion}>
@@ -124,6 +148,7 @@ export default function Navbar() {
               </div>
             ) : (
               <Link to="/iniciarsesion" className="navbar-actions__auth-btn">
+                <IconUser />
                 Acceder
               </Link>
             )}
@@ -134,12 +159,12 @@ export default function Navbar() {
             {/* CARRITO */}
             <button
               onClick={toggleDrawer}
-              className={`navbar-actions__cart border-0 bg-transparent p-0 ${totalItems > 0 ? "navbar-actions__cart--active" : ""}`}
+              className={`navbar-actions__cart ${totalItems > 0 ? "navbar-actions__cart--active" : ""}`}
               aria-label="Abrir carrito"
               title="Ver carrito"
             >
               <div className="navbar-actions__cart-icon-wrap">
-                <BsCart3 size={22} />
+                <BsCart3 size={20} />
                 {totalItems > 0 && (
                   <span className="navbar-actions__cart-badge" aria-live="polite" key={totalItems}>
                     {totalItems}
@@ -155,6 +180,7 @@ export default function Navbar() {
             <button
               className={`navbar-hamburger ${menuOpen ? "navbar-hamburger--open" : ""}`}
               onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Menú"
             >
               <span /><span /><span />
             </button>
@@ -164,7 +190,7 @@ export default function Navbar() {
         {/* BUSCADOR MOBILE */}
         {searchOpen && (
           <form className="navbar-search-mobile" onSubmit={handleBuscar}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg>
@@ -180,16 +206,16 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* NAV LINKS — fuera de navbar-top para mejor separación */}
+      {/* NAV LINKS */}
       <nav className={`navbar-nav ${menuOpen ? "navbar-nav--open" : ""}`}>
         <ul className="navbar-nav__list">
-          {NAV_LINKS.map(({ to, label, destacado }) => (
+          {NAV_LINKS.map(({ to, label }) => (
             <li key={to} className="navbar-nav__item">
               <NavLink
                 to={to}
                 end={to === "/"}
                 className={({ isActive }) =>
-                  `navbar-nav__link ${isActive ? "navbar-nav__link--active" : ""} ${destacado ? "navbar-nav__link--oferta" : ""}`
+                  `navbar-nav__link ${isActive ? "navbar-nav__link--active" : ""}`
                 }
                 onClick={closeMenu}
               >
