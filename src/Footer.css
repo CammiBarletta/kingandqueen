@@ -142,3 +142,23 @@
     margin: 20px 16px 14px;
   }
 }
+@media (max-width: 767px) {
+  .site-footer__inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .site-footer__hr {
+    margin: 20px 16px 14px;
+  }
+
+
+  .site-footer__col:first-child .site-footer__list {
+    display: none; /* oculta la lista de servicios en mobile */
+  }
+
+  .site-footer__copy {
+    padding: 0 16px;
+    font-size: 0.75rem;
+  }
+}

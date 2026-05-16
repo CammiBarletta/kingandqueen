@@ -39,6 +39,7 @@ export default function ProductForm() {
   const [form, setForm] = useState(FORM_INICIAL);
   const [errores, setErrores] = useState({});
   const [guardando, setGuardando] = useState(false);
+  const [subiendoImagen, setSubiendoImagen] = useState(false);
 
   // ─── Buscar el producto en el contexto (modo edición) ───────────────────────
   // useMemo: solo recalcula si cambia `productos` o `id`.
@@ -154,7 +155,44 @@ export default function ProductForm() {
       </div>
     );
   }
+const handleImagenChange = async (e) => {
+  const archivo = e.target.files[0];
+  if (!archivo) return;
 
+  // Validación básica
+  if (archivo.size > 5 * 1024 * 1024) {
+    toast.error('La imagen no puede superar 5MB');
+    return;
+  }
+
+  setSubiendoImagen(true);
+
+  try {
+    const formData = new FormData();
+    formData.append('file', archivo);
+    formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+    formData.append('folder', 'productos'); // carpeta en Cloudinary
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      { method: 'POST', body: formData }
+    );
+
+    const data = await res.json();
+
+    if (data.secure_url) {
+      // Guardamos la URL en el campo avatar del form
+      setForm(prev => ({ ...prev, avatar: data.secure_url }));
+      toast.success('Imagen subida ✓');
+    } else {
+      throw new Error('No se recibió URL');
+    }
+  } catch {
+    toast.error('Error al subir la imagen. Intentá de nuevo.');
+  } finally {
+    setSubiendoImagen(false);
+  }
+};
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="container py-4" style={{ maxWidth: '680px' }}>
@@ -348,50 +386,82 @@ export default function ProductForm() {
               </div>
           }
         </fieldset>
+{/* ── Sección: Imagen ── */}
+<fieldset className="border rounded-3 p-3 mb-4">
+  <legend className="float-none w-auto px-2 small text-muted fw-semibold">
+    Imagen
+  </legend>
 
-        {/* ── Sección: Imagen ── */}
-        <fieldset className="border rounded-3 p-3 mb-4">
-          <legend className="float-none w-auto px-2 small text-muted fw-semibold">
-            Imagen
-          </legend>
+  {/* Selector de archivo */}
+  <label htmlFor="imagenArchivo" className="form-label fw-medium">
+    Subir imagen
+    <span className="text-muted fw-normal ms-1 small">(jpg, png, webp)</span>
+  </label>
+  <input
+    id="imagenArchivo"
+    type="file"
+    accept="image/*"
+    className="form-control mb-2"
+    onChange={handleImagenChange}
+    disabled={subiendoImagen}
+  />
 
-          <label htmlFor="avatar" className="form-label fw-medium">
-            URL de imagen
-          </label>
-          <input
-            id="avatar"
-            name="avatar"
-            type="url"
-            className="form-control"
-            value={form.avatar}
-            onChange={handleChange}
-            placeholder="https://..."
-          />
-          <div className="form-text">
-            Pegá la URL directa de la imagen (jpg, png, webp).
-          </div>
+  {/* Barra de progreso mientras sube */}
+  {subiendoImagen && (
+    <div className="d-flex align-items-center gap-2 mb-2">
+      <div className="spinner-border spinner-border-sm text-primary" />
+      <small className="text-muted">Subiendo imagen a Cloudinary...</small>
+    </div>
+  )}
 
-          {/* Preview de imagen — solo si hay URL cargada */}
-          {form.avatar && (
-            <div className="mt-3">
-              <img
-                src={form.avatar}
-                alt="Preview del producto"
-                style={{
-                  height: '120px',
-                  width: '120px',
-                  objectFit: 'cover',
-                  borderRadius: '8px',
-                  border: '1px solid #dee2e6',
-                }}
-                // Si la URL es inválida, ocultamos la imagen rota
-                onError={e => { e.target.style.display = 'none'; }}
-                onLoad={e  => { e.target.style.display = 'block'; }}
-              />
-            </div>
-          )}
-        </fieldset>
+  {/* O pegar URL manual como fallback */}
+  <div className="mt-3">
+    <label htmlFor="avatar" className="form-label fw-medium small text-muted">
+      O pegá una URL directamente
+    </label>
+    <input
+      id="avatar"
+      name="avatar"
+      type="url"
+      className="form-control form-control-sm"
+      value={form.avatar}
+      onChange={handleChange}
+      placeholder="https://..."
+      disabled={subiendoImagen}
+    />
+  </div>
 
+  {/* Preview — aparece con cualquiera de los dos métodos */}
+  {form.avatar && (
+    <div className="mt-3 d-flex align-items-center gap-3">
+      <img
+        src={form.avatar}
+        alt="Preview del producto"
+        style={{
+          height: '100px',
+          width: '100px',
+          objectFit: 'cover',
+          borderRadius: '8px',
+          border: '1px solid #dee2e6',
+        }}
+        onError={e => { e.target.style.display = 'none'; }}
+        onLoad={e  => { e.target.style.display = 'block'; }}
+      />
+      <div>
+        <small className="text-success fw-semibold d-block">✓ Imagen cargada</small>
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-danger mt-1"
+          onClick={() => setForm(prev => ({ ...prev, avatar: '' }))}
+        >
+          Quitar imagen
+        </button>
+      </div>
+    </div>
+  )}
+</fieldset>
+       
+    
         {/* ── Sección: Visibilidad ── */}
         <fieldset className="border rounded-3 p-3 mb-4">
           <legend className="float-none w-auto px-2 small text-muted fw-semibold">

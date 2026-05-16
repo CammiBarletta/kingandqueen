@@ -101,7 +101,8 @@ export default function ProductoCard({ producto }) {
      src={producto.imagen || producto.avatar}
   alt={producto.nombre}
   style={estilos.imagen}
-  onError={e => { e.currentTarget.style.background = "#f0f0f0"; e.currentTarget.src = ""; }}
+  onError={e => { e.target.src = "https://placehold.co/400x300?text=Sin+imagen";
+ }}
 />
       <div style={estilos.cuerpo}>
         {producto.categoria && (

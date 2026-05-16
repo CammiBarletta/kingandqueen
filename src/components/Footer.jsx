@@ -18,7 +18,7 @@ export default function Footer() {
             <li>- Envíos disponibles</li>
           </ul>
           <p className="site-footer__text site-footer__tagline">
-            Dale a tu mascota todo lo que se merece 🐾
+            Dale a tu mascota todo lo que se merece 
           </p>
         </div>
 

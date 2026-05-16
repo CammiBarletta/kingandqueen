@@ -30,7 +30,6 @@ const normalizarProducto = (producto) => ({
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function ProductsProvider({ children }) {
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todas');
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -65,22 +64,24 @@ export function ProductsProvider({ children }) {
         setCargando(false);
       }
     );
-    return () => unsub(); // limpia el listener al desmontar
+    return () => unsub();
   }, []);
 
-  // ─── Valores derivados ────────────────────────────────────────────────────
+  // ─── Valores derivados (data layer, sin lógica de UI) ────────────────────
 
-  const productosFiltrados = useMemo(() => {
-    const activos = productos.filter((p) => p.activo !== false);
-    if (categoriaSeleccionada === 'todas') return activos;
-    return activos.filter((p) => p.categoria === categoriaSeleccionada);
-  }, [productos, categoriaSeleccionada]);
-
-  const productosDestacados = useMemo(
-    () => productosFiltrados.filter((p) => p.destacado === true),
-    [productosFiltrados]
+  // Solo productos activos — punto de partida para todas las páginas
+  const productosActivos = useMemo(
+    () => productos.filter((p) => p.activo !== false),
+    [productos]
   );
 
+  // Destacados derivan de productosActivos, no de ningún filtro de UI
+  const productosDestacados = useMemo(
+    () => productosActivos.filter((p) => p.destacado === true),
+    [productosActivos]
+  );
+
+  // Categorías únicas sobre el total de productos (incluyendo inactivos para admin)
   const categorias = useMemo(() => {
     const lista = productos.map((p) => p.categoria);
     return ['todas', ...new Set(lista)];
@@ -216,8 +217,9 @@ export function ProductsProvider({ children }) {
     <ProductsContext.Provider
       value={{
         productos,
-        productosFiltrados,
+        productosActivos,
         productosDestacados,
+        categorias,
         cargando,
         error,
         actualizandoIds,
@@ -227,9 +229,6 @@ export function ProductsProvider({ children }) {
         toggleDestacado,
         toggleActivo,
         validar,
-        categorias,
-        categoriaSeleccionada,
-        setCategoriaSeleccionada,
       }}
     >
       {children}

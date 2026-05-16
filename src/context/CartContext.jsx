@@ -1,44 +1,62 @@
+// CartContext.jsx
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { toast } from "react-toastify";
 
 export const CartContext = createContext();
 
 export function CartProvider({ children }) {
+
+  // ─── Carrito por usuario ──────────────────────────────────────────────────
+  // La key incluye el uid para que cada usuario tenga su propio carrito
+  const getKey = (uid) => uid ? `carrito_${uid}` : "carrito_anonimo";
+
+  const [uid, setUid] = useState(null);
+
   const [carrito, setCarrito] = useState(() => {
-    const guardado = localStorage.getItem("carrito");
+    const guardado = localStorage.getItem("carrito_anonimo");
     return guardado ? JSON.parse(guardado) : [];
   });
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  // Cuando el uid cambia (login/logout), cargamos el carrito correcto
   useEffect(() => {
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-  }, [carrito]);
+    const key = getKey(uid);
+    const guardado = localStorage.getItem(key);
+    setCarrito(guardado ? JSON.parse(guardado) : []);
+  }, [uid]);
 
-  // ─── Carrito ──────────────────────────────────────────────────────────────────
+  // Persistimos siempre que cambia el carrito
+  useEffect(() => {
+    const key = getKey(uid);
+    localStorage.setItem(key, JSON.stringify(carrito));
+  }, [carrito, uid]);
+
+  // Exponemos setUid para que AuthContext lo llame al login/logout
+  const sincronizarUsuario = (nuevoUid) => setUid(nuevoUid || null);
+
+  // ─── Acciones ────────────────────────────────────────────────────────────
 
   const agregarAlCarrito = (producto) => {
-    setCarrito(prevCarrito => {
+    setCarrito(prev => {
       const idNormalizado = String(producto.id);
-      const productoExistente = prevCarrito.find(item => item.id === idNormalizado);
-
-      if (productoExistente) {
-        return prevCarrito.map(item =>
+      const existente = prev.find(item => item.id === idNormalizado);
+      if (existente) {
+        return prev.map(item =>
           item.id === idNormalizado
             ? { ...item, cantidad: (item.cantidad || 1) + 1 }
             : item
         );
-      } else {
-        return [...prevCarrito, {
-          id: idNormalizado,
-          nombre: producto.nombre,
-          precio: producto.precio,
-          imagen: producto.imagen || producto.avatar,
-          cantidad: 1,
-        }];
       }
+      return [...prev, {
+        id: idNormalizado,
+        nombre: producto.nombre,
+        precio: producto.precio,
+        imagen: producto.imagen || producto.avatar, 
+        cantidad: 1,
+      }];
     });
-    toast.success(`${producto.nombre} agregado al carrito 🐾`);
+    toast.success(`${producto.nombre} agregado al carrito `);
   };
 
   const eliminarDelCarrito = (productoId) => {
@@ -46,33 +64,36 @@ export function CartProvider({ children }) {
     toast.info("Producto eliminado");
   };
 
+
   const vaciarCarrito = () => {
     setCarrito([]);
     toast.info("Carrito vaciado");
   };
 
+
+  const vaciarCarritoSilencioso = () => setCarrito([]);
+
   const agregarCantidad = (idProducto) => {
     setCarrito(prev =>
-      prev.map(producto =>
-        producto.id === String(idProducto)
-          ? { ...producto, cantidad: (producto.cantidad || 1) + 1 }
-          : producto
+      prev.map(p =>
+        p.id === String(idProducto)
+          ? { ...p, cantidad: (p.cantidad || 1) + 1 }
+          : p
       )
     );
   };
 
   const quitarCantidad = (idProducto) => {
     setCarrito(prev =>
-      prev.map(producto => {
-        if (producto.id !== String(idProducto)) return producto;
-        const cantidadActual = producto.cantidad || 1;
-        if (cantidadActual === 1) return null;
-        return { ...producto, cantidad: cantidadActual - 1 };
+      prev.map(p => {
+        if (p.id !== String(idProducto)) return p;
+        if ((p.cantidad || 1) === 1) return null;
+        return { ...p, cantidad: p.cantidad - 1 };
       }).filter(Boolean)
     );
   };
 
-  // ─── Valores derivados ────────────────────────────────────────────────────────
+  // ─── Valores derivados ────────────────────────────────────────────────────
 
   const total = useMemo(
     () => carrito.reduce((sum, item) => sum + (Number(item.precio) * (item.cantidad || 1)), 0),
@@ -84,9 +105,16 @@ export function CartProvider({ children }) {
     [carrito]
   );
 
-  // ─── WhatsApp ─────────────────────────────────────────────────────────────────
+  // ─── Número de pedido ─────────────────────────────────────────────────────
+  // Genera un número legible tipo KQ-4821
+  const generarNumeroPedido = () => {
+    const num = Math.floor(1000 + Math.random() * 9000);
+    return `KQ-${num}`;
+  };
 
-  const enviarPedidoPorWhatsapp = () => {
+  // ─── WhatsApp ─────────────────────────────────────────────────────────────
+
+  const enviarPedidoPorWhatsapp = (numeroPedido) => {
     if (carrito.length === 0) {
       toast.error("Tu carrito está vacío 🐾");
       return;
@@ -96,28 +124,30 @@ export function CartProvider({ children }) {
 
     const items = carrito
       .map(item =>
-        `• ${sanitizar(item.nombre)} x${item.cantidad || 1} - $${(
+        `• ${sanitizar(item.nombre)} x${item.cantidad || 1} — $${(
           Number(item.precio) * (item.cantidad || 1)
         ).toLocaleString("es-AR")}`
       )
       .join("\n");
 
     const mensaje =
-      `*Nuevo pedido King & Queen*\n\n` +
+      `*Nuevo pedido King & Queen*\n` +
+      `*N° ${numeroPedido}*\n\n` +
       `${items}\n\n` +
       `*Total: $${total.toLocaleString("es-AR")}*\n\n` +
-      `¡Hola! Quiero realizar este pedido`;
+      `¡Hola! Quiero realizar este pedido 🐾`;
 
     const numeroWhatsapp = "5491128714704";
-    window.open(`https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent(mensaje)}`, "_blank");
+    window.open(
+      `https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent(mensaje)}`,
+      "_blank"
+    );
   };
 
-  // ─── Drawer ───────────────────────────────────────────────────────────────────
+  // ─── Drawer ───────────────────────────────────────────────────────────────
 
   const toggleDrawer = () => setIsDrawerOpen(prev => !prev);
   const cerrarDrawer = () => setIsDrawerOpen(false);
-
-  // ─── Provider ─────────────────────────────────────────────────────────────────
 
   return (
     <CartContext.Provider value={{
@@ -125,11 +155,14 @@ export function CartProvider({ children }) {
       agregarAlCarrito,
       eliminarDelCarrito,
       vaciarCarrito,
+      vaciarCarritoSilencioso,
       agregarCantidad,
       quitarCantidad,
       total,
       totalItems,
+      generarNumeroPedido,
       enviarPedidoPorWhatsapp,
+      sincronizarUsuario,
       isDrawerOpen,
       toggleDrawer,
       cerrarDrawer,

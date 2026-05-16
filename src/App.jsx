@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from "react-router-dom";
 import Navbar from './pages/Navbar';
 import Nosotros from './pages/Nosotros';
 import Inicio from './pages/Inicio';
@@ -11,6 +11,7 @@ import IniciarSesion from './pages/IniciarSesion';
 import Pagar from './pages/Pagar';
 import CartDrawer from './components/CartDrawer';
 import RutaProtegida from './pages/RutaProtegida';
+import ScrollToTop from "./components/ScrollToTop";
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -18,6 +19,7 @@ import { ProductsProvider } from './context/ProductsContext';
 import Dashboard   from './admin/Dashboard';
 import ProductList from './admin/ProductList';
 import ProductForm from './admin/ProductForm';
+import PedidosList from './admin/PedidoList';
 
 
 import './index.css';
@@ -26,33 +28,46 @@ import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
+    
     <CartProvider>
       <AuthProvider>
          <ProductsProvider>
+          <ScrollToTop />
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
           <Navbar />
           <CartDrawer />
           <div style={{ paddingTop: "var(--navbar-height)",flex: "1 1 auto",minHeight: "60vh"}}>
-           <Routes>
-                {/* ── Rutas públicas ── */}
-                <Route path='/'            element={<Inicio />}         />
-                <Route path='/nosotros'    element={<Nosotros />}       />
-                <Route path='/productos'   element={<Productos />}      />
-                <Route path='/productos/:id' element={<DetalleProducto />} />
-                <Route path='/contacto'    element={<Contacto />}       />
-                <Route path='/iniciarsesion' element={<IniciarSesion />} />
-                <Route path='/pagar' element={
-                  <RutaProtegida><Pagar /></RutaProtegida>} />
-                {/* ── Rutas admin (protegidas) ── */}
-                <Route path='/admin' element={
-                  <RutaProtegida><Dashboard /></RutaProtegida> } />
-                <Route path='/admin/productos' element={
-                  <RutaProtegida><ProductList /></RutaProtegida> } />
-                <Route path='/admin/productos/nuevo' element={
-                  <RutaProtegida><ProductForm /></RutaProtegida>} />
-                <Route path='/admin/productos/:id/editar' element={
-                  <RutaProtegida><ProductForm /></RutaProtegida> } />
-              </Routes>
+              <Routes>
+     {/* ── Rutas públicas ── */}
+  <Route path='/'              element={<Inicio />}           />
+  <Route path='/nosotros'      element={<Nosotros />}         />
+  <Route path='/productos'     element={<Productos />}        />
+  <Route path='/productos/:id' element={<DetalleProducto />}  />
+  <Route path='/contacto'      element={<Contacto />}         />
+  <Route path='/iniciarsesion' element={<IniciarSesion />}    />
+
+  {/* ── Rutas protegidas ── */}
+  <Route path='/pagar' element={
+    <RutaProtegida><Pagar /></RutaProtegida>
+  } />
+
+  {/* ── Rutas admin ── */}
+  <Route path='/admin' element={
+    <RutaProtegida soloAdmin><Dashboard /></RutaProtegida>
+  } />
+  <Route path='/admin/pedidos' element={
+  <RutaProtegida soloAdmin><PedidosList /></RutaProtegida>
+  } />
+  <Route path='/admin/productos' element={
+    <RutaProtegida soloAdmin><ProductList /></RutaProtegida>
+  } />
+  <Route path='/admin/productos/nuevo' element={
+    <RutaProtegida soloAdmin><ProductForm /></RutaProtegida>
+  } />
+  <Route path='/admin/productos/:id/editar' element={
+    <RutaProtegida soloAdmin><ProductForm /></RutaProtegida>
+  } />
+</Routes>
           </div>
           <Footer />
           <ToastContainer
@@ -68,6 +83,7 @@ function App() {
         </ProductsProvider>
       </AuthProvider>
     </CartProvider>
+
   );
 }
 

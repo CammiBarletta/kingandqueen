@@ -13,7 +13,7 @@ export default function ProductCarousel({ productos = [] }) {
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   const CARD_WIDTH = 280;
-  const SPEED = 0.6; // px por frame — ajustá este valor para más/menos velocidad
+  const SPEED = 0.9; 
 
   // ── Auto-scroll en loop ──────────────────────────────────────────
   const tick = useCallback(() => {
@@ -96,10 +96,8 @@ export default function ProductCarousel({ productos = [] }) {
   if (!productos.length) {
     return <p style={{ color: "#999", fontStyle: "italic", padding: "24px 0" }}>Próximamente productos destacados…</p>;
   }
-
   return (
     <div style={{ position: "relative", width: "100%" }}>
-
       {/* Flecha izquierda */}
       <button
         onClick={() => handleScrollBy(-1)}
@@ -122,7 +120,6 @@ export default function ProductCarousel({ productos = [] }) {
           <polyline points="15 18 9 12 15 6" />
         </svg>
       </button>
-
       {/* Track */}
       <div
         ref={trackRef}
@@ -149,7 +146,6 @@ export default function ProductCarousel({ productos = [] }) {
       >
         {/* WebKit scrollbar oculto via style tag inline */}
         <style>{`.carousel-no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
-
         {productos.map((producto) => (
          <div
              key={producto.id}
@@ -167,7 +163,6 @@ export default function ProductCarousel({ productos = [] }) {
           </div>
         ))}
       </div>
-
       {/* Flecha derecha */}
       <button
         onClick={() => handleScrollBy(1)}

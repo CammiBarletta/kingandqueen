@@ -213,6 +213,13 @@ export default function Dashboard() {
             variante="outline-danger"
             onClick={handleCerrarSesion}
           />
+          <AccesoRapido
+  icono="📋"
+  titulo="Ver pedidos"
+  descripcion="Historial y estados"
+  variante="outline-warning"
+  to="/admin/pedidos"
+/>
         </div>
       </section>
 

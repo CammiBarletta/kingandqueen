@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 
 export default function IniciarSesion() {
-  const { iniciarSesion, registrar } = useAuthContext();
+  const { iniciarSesion, registrar, loginConGoogle, isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
   const ubicacion = useLocation();
   const desde = ubicacion.state?.desde || "/";
@@ -12,6 +12,8 @@ export default function IniciarSesion() {
   const [form, setForm] = useState({ nombre: "", email: "", password: "" });
   const [errores, setErrores] = useState({});
   const [cargando, setCargando] = useState(false);
+   if (isAuthenticated) return <Navigate to={desde} replace />;
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,8 +49,12 @@ export default function IniciarSesion() {
       "auth/wrong-password":      "Contraseña incorrecta.",
       "auth/email-already-in-use":"Ese email ya está registrado.",
       "auth/too-many-requests":   "Demasiados intentos. Esperá unos minutos.",
+      "auth/invalid-email":        "El formato del email no es válido.",
       "auth/network-request-failed": "Error de conexión. Revisá tu internet.",
       "auth/invalid-credential":  "Email o contraseña incorrectos.",
+        "auth/weak-password":        "La contraseña es muy débil. Mínimo 6 caracteres.",
+       "auth/popup-closed-by-user": "Cerraste la ventana de Google antes de terminar."
+        
     };
     return erroresFirebase[codigo] || "Ocurrió un error. Intentá de nuevo.";
   };
@@ -77,7 +83,7 @@ export default function IniciarSesion() {
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "420px" }}>
+    <div className="container mt-5 mb-5 pb-3" style={{ maxWidth: "420px" }}>
 
       {/* Header */}
       <div className="text-center mb-4">
@@ -204,6 +210,39 @@ export default function IniciarSesion() {
         </button>
 
       </form>
+
+      <div className="text-center my-3 text-muted" style={{ fontSize: "0.85rem" }}>
+        — o continuá con —
+      </div>
+
+      <button
+        type="button"
+        className="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center gap-2"
+        onClick={async () => {
+          setCargando(true);
+          try {
+            await loginConGoogle();
+            navigate(desde, { replace: true });
+          } catch (error) {
+  if (error.code !== "auth/popup-closed-by-user") {
+    setErrores({ general: traducirError(error.code) });
+  }
+            } finally {
+            setCargando(false);
+          }
+        }}
+        disabled={cargando}
+      >
+        <img
+          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+          alt="Google"
+          width="20"
+        />
+        Continuar con Google
+      </button>
     </div>
   );
 }
+
+
+  
