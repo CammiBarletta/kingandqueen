@@ -151,10 +151,14 @@
   .site-footer__hr {
     margin: 20px 16px 14px;
   }
-
-
+.site-footer__col:nth-child(2),
+  .site-footer__col:nth-child(3) {
+    display: inline-flex;
+    width: 48%;
+    vertical-align: top;
+  }
   .site-footer__col:first-child .site-footer__list {
-    display: none; /* oculta la lista de servicios en mobile */
+    display: none;
   }
 
   .site-footer__copy {

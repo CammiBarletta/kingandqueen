@@ -3,6 +3,7 @@ import { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import NosotrosHero from "../components/NosotrosHero";
 import SplitSection from "../components/SplitSection";
+import OpinionesCarrusel from "../components/OpinionesCarrusel";
 import "./Nosotros.css";
 
 const IMG_LOCAL      = "https://res.cloudinary.com/ddutzhkpe/image/upload/f_auto,q_auto,w_1600/v1778896577/ChatGPT_Image_15_may_2026_10_56_07_p.m._jvxaim.png";
@@ -58,8 +59,6 @@ export default function Nosotros() {
       >
         <p>
           King & Queen nació en 2024 con una idea simple: que cada mascota reciba el cuidado que merece.
-           <br /> Anderson abrió las puertas con una convicción clara —{" "}
-          <strong>atender con amor y acompañar, no solo vender.</strong>
         </p>
         <p>
           Desde el primer día, el local se convirtió en un espacio donde los dueños de mascotas encuentran no solo productos, sino también consejos, contención y una atención personalizada que hace la diferencia.
@@ -109,14 +108,14 @@ export default function Nosotros() {
         </p>
       </SplitSection>
 
-      {/* ── 5. Cierre ── */}
+        {/* ── 5. Cierre ── */}
       <section ref={refCierre} className="nosotros-cierre fade-in-scroll">
-        <p className="nosotros-cierre__eyebrow">Visitanos</p>
-        <h2 className="nosotros-cierre__title">¿Querés conocernos?</h2>
-        <p className="nosotros-cierre__horario">
-          Lunes a sábado de 08:00 a 20:00 — Buenos Aires
-        </p>
-        <div className="nosotros-cierre__actions">
+        <p className="nosotros-cierre__eyebrow">Google Reviews</p>
+        <h2 className="nosotros-cierre__title">Lo que dicen nuestros clientes</h2>
+ 
+        <OpinionesCarrusel />
+ 
+        <div className="nosotros-cierre__actions" style={{ marginTop: "48px" }}>
           <Link to="/productos" className="nosotros-cierre__btn-primary">
             Ver productos
           </Link>
@@ -130,7 +129,7 @@ export default function Nosotros() {
           </a>
         </div>
       </section>
-
+ 
     </div>
   );
 }

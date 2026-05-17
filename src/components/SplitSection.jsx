@@ -1,18 +1,7 @@
 
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
+import './SplitSection.css';
 
-/**
- * Sección reutilizable con foto a un lado y texto al otro.
- * Aparece con animación al hacer scroll.
- *
- * @param {string}    imagen       - URL de la imagen de fondo
- * @param {string}    imagenAlt    - Descripción accesible de la imagen
- * @param {"left"|"right"} fotoLado - Lado donde va la foto (default: "left")
- * @param {"light"|"white"} fondo  - Color de fondo del panel de texto
- * @param {string}    eyebrow      - Etiqueta pequeña superior
- * @param {string}    titulo       - Título de la sección
- * @param {ReactNode} children     - Contenido del panel de texto
- */
 export default function SplitSection({
   imagen,
   imagenAlt = "",
@@ -22,44 +11,52 @@ export default function SplitSection({
   titulo,
   children,
 }) {
-  const ref = useRef(null);
+  const ref        = useRef(null);
+  const imgRef     = useRef(null);
+  const textRef    = useRef(null);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const section = ref.current;
+    if (!section) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          el.classList.add("visible");
+          section.classList.add("ss-visible");
           observer.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.12, rootMargin: "0px 0px -60px 0px" }
     );
-    observer.observe(el);
+    observer.observe(section);
     return () => observer.disconnect();
   }, []);
 
   const imagenEl = (
     <div
-      className="split-section__image"
-      style={{ backgroundImage: `url(${imagen})` }}
-      role="img"
-      aria-label={imagenAlt || titulo}
-    />
+      ref={imgRef}
+      className={`ss__img-wrap ss__img-wrap--${fotoLado === "left" ? "from-left" : "from-right"}`}
+    >
+      <img src={imagen} alt={imagenAlt || titulo} className="ss__img" />
+    </div>
   );
 
   const textoEl = (
-    <div className={`split-section__text split-section__text--${fondo}`}>
-      {eyebrow && <p className="split-section__eyebrow">{eyebrow}</p>}
-      <h2 className="split-section__title">{titulo}</h2>
-      <div className="split-section__divider" aria-hidden="true" />
-      {children}
+    <div ref={textRef} className={`ss__text ss__text--${fondo}`}>
+      <div className="ss__text-inner">
+        {eyebrow && <p className="ss__eyebrow">{eyebrow}</p>}
+        <h2 className="ss__title">{titulo}</h2>
+        <div className="ss__divider" aria-hidden="true" />
+        <div className="ss__body">{children}</div>
+      </div>
     </div>
   );
 
   return (
-    <section ref={ref} className="split-section fade-in-scroll">
+    <section
+      ref={ref}
+      className={`ss ss--${fondo}`}
+    >
       {fotoLado === "left" ? (
         <>{imagenEl}{textoEl}</>
       ) : (

@@ -69,13 +69,16 @@ const handlePagar = () => {
             <div className="text-center mt-5">
               <p style={{ fontSize: "3rem" }}>🐾</p>
               <p className="text-muted">Tu carrito está vacío</p>
-              <button
-                className="btn btn-sm"
-                style={{ backgroundColor: "#4DB8C8", color: "white" }}
-                onClick={cerrarDrawer}
-              >
-                Ver productos
-              </button>
+            <button
+  className="btn btn-sm"
+  style={{ backgroundColor: "#4DB8C8", color: "white" }}
+  onClick={() => {
+    cerrarDrawer();
+    navigate("/productos"); 
+  }}
+>
+  Ver productos
+</button>
             </div>
           ) : (
             carrito.map((item) => (

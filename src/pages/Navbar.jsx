@@ -189,7 +189,7 @@ export default function Navbar() {
 
         {/* BUSCADOR MOBILE */}
         {searchOpen && (
-          <form className="navbar-search-mobile" onSubmit={handleBuscar}>
+            <form className="navbar-search-mobile" onSubmit={handleBuscar}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
@@ -202,6 +202,14 @@ export default function Navbar() {
               onChange={(e) => setTextoBusqueda(e.target.value)}
               autoFocus
             />
+                <button
+      type="button"
+      onClick={() => { setSearchOpen(false); setTextoBusqueda(""); }}
+      style={{ background: "none", border: "none", color: "#888", fontSize: "1.2rem", cursor: "pointer" }}
+    >
+      ✕
+    </button>
+
           </form>
         )}
       </div>

@@ -433,6 +433,26 @@
 
 @media (max-width: 575px) {
   :root { --navbar-height: 60px; }
+  
+  
+  @media (max-width: 575px) {
+  .navbar-actions__auth-btn {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+  }
+
+  @media (max-width: 575px) {
+  .navbar-actions__admin-btn {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+}
+@media (max-width: 575px) {
+  .navbar-actions__cart {
+    padding: 8px 10px !important;
+  }
+}
+}
 
   .navbar-top__inner {
     grid-template-columns: 1fr auto;

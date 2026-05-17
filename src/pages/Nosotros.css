@@ -15,7 +15,6 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-
   background-size: cover;
   background-position: center;
 }
@@ -67,77 +66,17 @@
   50%       { transform: translateY(8px); }
 }
 
-/* Fade in al scroll */
+/* ── Fade-in base ── */
 .fade-in-scroll {
   opacity: 0;
-  transform: translate3d(0, 30px, 0);
-  transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+  transform: translate3d(0, 40px, 0);
+  transition: opacity 0.65s ease-out, transform 0.65s ease-out;
 }
 .fade-in-scroll.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* SplitSection */
-.split-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  min-height: 520px;
-    contain: layout style paint;
-}
-
-.split-section__image {
-  min-height: 380px;
-  background-size: cover;
-  background-position: center;
-}
-
-.split-section__text {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 64px 56px;
-}
-
-.split-section__text--light { background: #faf9f6; }
-.split-section__text--white { background: #fff; }
-
-.split-section__eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #4DB8C8;
-  margin-bottom: 12px;
-}
-
-.split-section__title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-  font-weight: 700;
-  color: #1c1c1a;
-  margin: 0 0 20px;
-  line-height: 1.2;
-}
-
-.split-section__divider {
-  width: 48px;
-  height: 3px;
-  background: #1a3a2a;
-  border-radius: 2px;
-  margin-bottom: 24px;
-}
-
-.split-section__text p {
-  font-size: 15px;
-  line-height: 1.8;
-  color: #555;
-  margin: 0 0 16px;
-}
-
-.split-section__text p:last-of-type {
-  margin-bottom: 0;
-}
 
 /* Botón CTA dentro de sección */
 .nosotros-btn {
@@ -158,11 +97,11 @@
 
 .nosotros-btn:hover { background: #2d6a4f; }
 
-/* Sección cierre */
+/* ── Sección cierre ── */
 .nosotros-cierre {
   text-align: center;
-  padding: 100px 24px;
-  background: #1a3a2a;
+  padding: 64px 24px;
+  background: #fff;
 }
 
 .nosotros-cierre__eyebrow {
@@ -170,24 +109,19 @@
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.4);
+  margin-bottom: 12px;
 }
 
 .nosotros-cierre__title {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
   font-weight: 700;
-  color: #fff;
-  margin: 0 0 16px;
+  color: #1c1c1a;
+  margin: 0 0 40px;
 }
 
-.nosotros-cierre__horario {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.65);
-  margin: 0 0 48px;
-  line-height: 1.6;
-}
+.nosotros-cierre__horario { display: none; }
 
 .nosotros-cierre__actions {
   display: flex;
@@ -199,8 +133,8 @@
 .nosotros-cierre__btn-primary {
   display: inline-flex;
   align-items: center;
-  background: #fff;
-  color: #1a3a2a;
+  background: #1a3a2a;
+  color: #fff;
   font-size: 14px;
   font-weight: 600;
   padding: 13px 28px;
@@ -209,34 +143,57 @@
   transition: opacity 0.2s;
 }
 
-.nosotros-cierre__btn-primary:hover { opacity: 0.88; }
+.nosotros-cierre__btn-primary:hover { opacity: 0.85; }
 
 .nosotros-cierre__btn-ghost {
   display: inline-flex;
   align-items: center;
   background: transparent;
-  color: #fff;
+  color: #1a3a2a;
   font-size: 14px;
   font-weight: 600;
   padding: 13px 28px;
   border-radius: 50px;
   text-decoration: none;
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border: 1.5px solid rgba(26, 58, 42, 0.35);
   transition: border-color 0.2s;
 }
 
-.nosotros-cierre__btn-ghost:hover { border-color: #fff; }
+.nosotros-cierre__btn-ghost:hover { border-color: #1a3a2a; }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .split-section__text { padding: 48px 24px; }
-  .nosotros-cierre { padding: 72px 24px; }
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .split-section {
+    grid-template-columns: 1fr;
+  }
+
+  /* En mobile la imagen siempre va arriba */
+  .split-section__imagen-wrap {
+    order: -1;
+    padding: 32px 24px 24px;
+  }
+
+  .split-section__img {
+    height: 260px;
+    border-radius: 16px;
+  }
+
+  .split-section__text {
+    padding: 36px 24px 48px;
+  }
+
+  .nosotros-cierre {
+    padding: 48px 16px;
+  }
 }
-/* OPTIMIZACIÓN GLOBAL DE ANIMACIONES */
+
+/* ── Optimización de animaciones ── */
 .fade-in-scroll,
-.nosotros-hero__bg,
-.split-section__image {
+.nosotros-hero__bg {
   will-change: transform, opacity;
-  transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+.split-section__img {
+  will-change: transform, opacity;
 }
