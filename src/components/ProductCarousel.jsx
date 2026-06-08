@@ -1,10 +1,12 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import ProductoCard from "./ProductoCard";
+import "./ProductCarousel.css";
 
 export default function ProductCarousel({ productos = [] }) {
   const trackRef = useRef(null);
   const animRef = useRef(null);
   const pausedRef = useRef(false);
+  const isSnappingRef = useRef(false); 
 
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -13,7 +15,7 @@ export default function ProductCarousel({ productos = [] }) {
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   const CARD_WIDTH = 280;
-  const SPEED = 0.9; 
+  const SPEED = 0.8;
 
   // ── Auto-scroll en loop ──────────────────────────────────────────
   const tick = useCallback(() => {
@@ -25,12 +27,10 @@ export default function ProductCarousel({ productos = [] }) {
 
     el.scrollLeft += SPEED;
 
-    // Si llegó al final, vuelve al principio suavemente
     if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 1) {
       el.scrollLeft = 0;
     }
 
-    // Actualizar flechas
     setCanScrollLeft(el.scrollLeft > 8);
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 8);
 
@@ -47,14 +47,16 @@ export default function ProductCarousel({ productos = [] }) {
   const onMouseLeave = () => {
     pausedRef.current = false;
     setIsDragging(false);
-    if (trackRef.current) trackRef.current.style.cursor = "grab";
   };
 
   // ── Flechas manuales ─────────────────────────────────────────────
   const handleScrollBy = (direction) => {
     const el = trackRef.current;
     if (!el) return;
+    pausedRef.current = true; // pausa el auto-scroll mientras el usuario navega
     el.scrollBy({ left: direction * CARD_WIDTH * 2, behavior: "smooth" });
+    // retoma después de la animación smooth (~500ms)
+    setTimeout(() => { pausedRef.current = false; }, 600);
   };
 
   // ── Drag con mouse ───────────────────────────────────────────────
@@ -62,7 +64,6 @@ export default function ProductCarousel({ productos = [] }) {
     setIsDragging(true);
     setStartX(e.pageX - trackRef.current.offsetLeft);
     setScrollLeft(trackRef.current.scrollLeft);
-    trackRef.current.style.cursor = "grabbing";
   };
 
   const onMouseMove = (e) => {
@@ -73,10 +74,7 @@ export default function ProductCarousel({ productos = [] }) {
     trackRef.current.scrollLeft = scrollLeft - walk;
   };
 
-  const onMouseUp = () => {
-    setIsDragging(false);
-    if (trackRef.current) trackRef.current.style.cursor = "grab";
-  };
+  const onMouseUp = () => setIsDragging(false);
 
   // ── Touch ────────────────────────────────────────────────────────
   const onTouchStart = (e) => {
@@ -85,7 +83,9 @@ export default function ProductCarousel({ productos = [] }) {
     setScrollLeft(trackRef.current.scrollLeft);
   };
 
-  const onTouchEnd = () => { pausedRef.current = false; };
+  const onTouchEnd = () => {
+    setTimeout(() => { pausedRef.current = false; }, 400);
+  };
 
   const onTouchMove = (e) => {
     const x = e.touches[0].pageX - trackRef.current.offsetLeft;
@@ -94,35 +94,26 @@ export default function ProductCarousel({ productos = [] }) {
   };
 
   if (!productos.length) {
-    return <p style={{ color: "#999", fontStyle: "italic", padding: "24px 0" }}>Próximamente productos destacados…</p>;
+    return <p className="carousel-empty">Próximamente productos destacados…</p>;
   }
+
   return (
-    <div style={{ position: "relative", width: "100%" }}>
+    <div className="carousel-wrapper">
       {/* Flecha izquierda */}
       <button
+        className={`carousel-arrow carousel-arrow--left ${!canScrollLeft ? "carousel-arrow--hidden" : ""}`}
         onClick={() => handleScrollBy(-1)}
-        style={{
-          position: "absolute", top: "50%", left: "-18px",
-          transform: "translateY(-60%)", zIndex: 10,
-          width: "40px", height: "40px", borderRadius: "50%",
-          border: "1.5px solid #d0d0c8", background: "#fff",
-          color: "#1a3a2a", cursor: "pointer",
-          display: canScrollLeft ? "flex" : "none",
-          alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-          transition: "background 0.2s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = "#1a3a2a"; e.currentTarget.style.color = "#fff"; }}
-        onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "#1a3a2a"; }}
         aria-label="Anterior"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
       </button>
-      {/* Track */}
+
+  
       <div
         ref={trackRef}
+        className={`carousel-track${isDragging ? " is-dragging" : ""}`}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         onMouseDown={onMouseDown}
@@ -131,54 +122,18 @@ export default function ProductCarousel({ productos = [] }) {
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "nowrap",
-          overflowX: "auto",
-          gap: "20px",
-          padding: "12px 4px 4px",
-          cursor: "grab",
-          // Ocultar scrollbar en todos los navegadores
-          scrollbarWidth: "none",       // Firefox
-          msOverflowStyle: "none",      // IE/Edge
-        }}
       >
-        {/* WebKit scrollbar oculto via style tag inline */}
-        <style>{`.carousel-no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
         {productos.map((producto) => (
-         <div
-             key={producto.id}
-            style={{
-              flex: "0 0 260px",
-              width: "260px",
-              minWidth: "260px",
-              maxWidth: "260px",
-              transition: "transform 0.25s ease",
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
-          >
-            <ProductoCard producto={producto} />
+          <div key={producto.id} className="carousel-item">
+            <ProductoCard producto={producto} isMobile={false} />
           </div>
         ))}
       </div>
+
       {/* Flecha derecha */}
       <button
+        className={`carousel-arrow carousel-arrow--right ${!canScrollRight ? "carousel-arrow--hidden" : ""}`}
         onClick={() => handleScrollBy(1)}
-        style={{
-          position: "absolute", top: "50%", right: "-18px",
-          transform: "translateY(-60%)", zIndex: 10,
-          width: "40px", height: "40px", borderRadius: "50%",
-          border: "1.5px solid #d0d0c8", background: "#fff",
-          color: "#1a3a2a", cursor: "pointer",
-          display: canScrollRight ? "flex" : "none",
-          alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-          transition: "background 0.2s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = "#1a3a2a"; e.currentTarget.style.color = "#fff"; }}
-        onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "#1a3a2a"; }}
         aria-label="Siguiente"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -187,16 +142,8 @@ export default function ProductCarousel({ productos = [] }) {
       </button>
 
       {/* Fades laterales */}
-      <div style={{
-        position: "absolute", top: 0, bottom: 0, left: 0, width: "48px",
-        background: "linear-gradient(to right, #faf9f7, transparent)",
-        pointerEvents: "none", zIndex: 5,
-      }} />
-      <div style={{
-        position: "absolute", top: 0, bottom: 0, right: 0, width: "48px",
-        background: "linear-gradient(to left, #faf9f7, transparent)",
-        pointerEvents: "none", zIndex: 5,
-      }} />
+      <div className="carousel-fade carousel-fade--left" />
+      <div className="carousel-fade carousel-fade--right" />
     </div>
   );
 }

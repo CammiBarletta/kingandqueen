@@ -12,32 +12,71 @@ const NAV_LINKS = [
   { to: "/contacto", label: "Contacto" },
 ];
 
-/* ── Íconos SVG inline minimalistas ── */
+const TOPBAR_MESSAGES = [
+  "Envíos a todo el país",
+  " Comprá con tarjeta o transferencia",
+  " Productos para perros, gatos y más",
+  " Nuevos productos todas las semanas",
+];
+
+/* ── Íconos SVG ───────────────────────────────────────────────── */
 const IconSearch = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+    strokeLinecap="round" strokeLinejoin="round">
     <circle cx="11" cy="11" r="8" />
     <path d="m21 21-4.35-4.35" />
   </svg>
 );
 
 const IconUser = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+    strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
     <circle cx="12" cy="7" r="4" />
   </svg>
 );
 
 const IconSettings = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+    strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
     <circle cx="12" cy="12" r="3" />
     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
   </svg>
 );
 
+/* ── Componente Topbar ────────────────────────────────────────── */
+function Topbar() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setCurrentIndex(prev => (prev + 1) % TOPBAR_MESSAGES.length);
+        setVisible(true);
+      }, 400);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="navbar-topbar">
+      <span
+        className={`navbar-topbar__message ${visible ? "navbar-topbar__message--visible" : ""}`}
+      >
+        {TOPBAR_MESSAGES[currentIndex]}
+      </span>
+    </div>
+  );
+}
+
+/* ── Componente principal ─────────────────────────────────────── */
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen]           = useState(false);
+  const [searchOpen, setSearchOpen]       = useState(false);
+  const [scrolled, setScrolled]           = useState(false);
   const [textoBusqueda, setTextoBusqueda] = useState("");
 
   const navigate = useNavigate();
@@ -53,7 +92,22 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const updateNavbarHeight = () => {
+      const navbar = document.querySelector('.navbar-header');
+      if (navbar) {
+        const height = navbar.offsetHeight;
+        document.documentElement.style.setProperty('--navbar-height', `${height}px`);
+      }
+    };
+
+    updateNavbarHeight();
+    window.addEventListener("resize", updateNavbarHeight);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", updateNavbarHeight);
+    };
   }, []);
 
   const closeMenu = () => {
@@ -77,6 +131,9 @@ export default function Navbar() {
 
   return (
     <header className={`navbar-header fixed-top ${scrolled ? "navbar-header--scrolled" : ""}`}>
+       <Topbar />
+
+      {/* ── BARRA PRINCIPAL — fondo blanco ────────────────────── */}
       <div className="navbar-top">
         <div className="navbar-top__inner">
 
@@ -93,7 +150,8 @@ export default function Navbar() {
           {/* BUSCADOR DESKTOP */}
           <form className="navbar-search" onSubmit={handleBuscar} role="search">
             <div className="navbar-search__wrap">
-              <svg className="navbar-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg className="navbar-search__icon" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2.5">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
@@ -164,7 +222,7 @@ export default function Navbar() {
               title="Ver carrito"
             >
               <div className="navbar-actions__cart-icon-wrap">
-                <BsCart3 size={20} />
+                <BsCart3 size={22} />
                 {totalItems > 0 && (
                   <span className="navbar-actions__cart-badge" aria-live="polite" key={totalItems}>
                     {totalItems}
@@ -189,7 +247,7 @@ export default function Navbar() {
 
         {/* BUSCADOR MOBILE */}
         {searchOpen && (
-            <form className="navbar-search-mobile" onSubmit={handleBuscar}>
+          <form className="navbar-search-mobile" onSubmit={handleBuscar}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
@@ -202,19 +260,23 @@ export default function Navbar() {
               onChange={(e) => setTextoBusqueda(e.target.value)}
               autoFocus
             />
-                <button
-      type="button"
-      onClick={() => { setSearchOpen(false); setTextoBusqueda(""); }}
-      style={{ background: "none", border: "none", color: "#888", fontSize: "1.2rem", cursor: "pointer" }}
-    >
-      ✕
-    </button>
-
+            <button
+              type="button"
+              className="navbar-search-mobile__close"
+              onClick={() => { setSearchOpen(false); setTextoBusqueda(""); }}
+              aria-label="Cerrar búsqueda"
+            >
+              ✕
+            </button>
           </form>
         )}
       </div>
 
-      {/* NAV LINKS */}
+      {/* ── TOPBAR — barra negra con mensajes rotativos ── */}
+      {/* Movido entre la barra blanca y el nav de links */}
+     
+
+      {/* ── BARRA NAV — fondo negro — links ───────────────────── */}
       <nav className={`navbar-nav ${menuOpen ? "navbar-nav--open" : ""}`}>
         <ul className="navbar-nav__list">
           {NAV_LINKS.map(({ to, label }) => (

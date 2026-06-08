@@ -1,108 +1,199 @@
-/* ============================================================
-   InicioBanner.css
-   Banner de video — full-width, responsive, sin deformación
-   ============================================================ */
+/* ══════════════════════════════════════════════════════════════
+   InicioBanner.css — Slider de imágenes
+   King & Queen Pet Shop
+   ══════════════════════════════════════════════════════════════ */
 
-/* ---------- Contenedor principal ---------- */
 .inicio-banner {
-  /* Separa del Navbar sin hacks de transformación */
-  margin-top: 0;
-  margin-bottom: 2rem;
-  /* Full-width respetando el flujo normal del documento */
-  width: 100%;
-  max-width: 100%;
-  /* Altura base — Desktop */
-  height: 400px;
-  max-height: 400px;  
-  /* Contiene el video y el overlay */
   position: relative;
+  width: 100%;
+  aspect-ratio: 1600 / 400;
+  max-height: 400px;
   overflow: hidden;
-  /* Bordes redondeados suaves */
-  border-radius: 16px;
-  /* Sombra sutil para profundidad */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-  /* Evita que el border-radius sea ignorado por el video */
-  isolation: isolate;
-  background-color: #0d0d0d; /* color de fondo mientras carga */
+  background: #f0f0f0;
+  user-select: none;
+  margin-top: var(--navbar-height);  
 }
-/* ---------- Video ---------- */
-.inicio-banner__video {
-  position: absolute;  /* ← correcto */
-  inset: 0;
-  width: 100%;         /* ← siempre 100% */
+
+@media (max-width: 575px) {
+  .inicio-banner {
+    margin-top: var(--navbar-height);  
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* ── Track — contiene todos los slides ───────────────────────── */
+.inicio-banner__track {
+  position: relative;
+  width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
-  opacity: 0;
-  transition: opacity 0.6s ease;
 }
 
-.inicio-banner__video--visible {
-  opacity: 1;
-}
-
-/* ---------- Skeleton / placeholder ---------- */
-.inicio-banner__skeleton {
+/* ── Slide individual ─────────────────────────────────────────── */
+.inicio-banner__slide {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    #1a1a1a 25%,
-    #2a2a2a 50%,
-    #1a1a1a 75%
-  );
-  background-size: 200% 100%;
-  animation: banner-shimmer 1.6s infinite;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
 }
 
-@keyframes banner-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+.inicio-banner__slide--active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-/* ---------- Overlay para contenido superpuesto ---------- */
+/* ── Imagen ───────────────────────────────────────────────────── */
+.inicio-banner__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* ── Caption por slide (opcional) ────────────────────────────── */
+.inicio-banner__caption {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  padding: 12px 40px;
+  font-size: 1rem;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Overlay para children globales ──────────────────────────── */
 .inicio-banner__overlay {
   position: absolute;
   inset: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  /* Gradiente semitransparente para legibilidad del texto */
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.08) 0%,
-    rgba(0, 0, 0, 0.45) 100%
-  );
-
-  /* Espaciado interno para el contenido */
-  padding: 2rem;
-  text-align: center;
-  color: #ffffff;
+  pointer-events: none;
 }
 
-/* ---------- Responsive ---------- */
+/* ── Skeleton / placeholder ───────────────────────────────────── */
+.inicio-banner__skeleton {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
 
-/* Tablet */
-@media (max-width: 991.98px) {
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Flechas ──────────────────────────────────────────────────── */
+.inicio-banner__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+}
+
+.inicio-banner__arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+.inicio-banner__arrow:hover {
+  background: #ffffff;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.inicio-banner__arrow--left  { left: 20px; }
+.inicio-banner__arrow--right { right: 20px; }
+
+/* ── Dots indicadores ─────────────────────────────────────────── */
+.inicio-banner__dots {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.inicio-banner__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s ease, transform 0.25s ease, width 0.25s ease;
+}
+
+.inicio-banner__dot--active {
+  background: #ffffff;
+  width: 24px;
+  border-radius: 4px;
+}
+
+.inicio-banner__dot:hover:not(.inicio-banner__dot--active) {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+
+/* En tablet/mobile la imagen se hace más pequeña proporcionalmente
+   con aspect-ratio, pero ponemos un mínimo para que no quede muy chica */
+@media (max-width: 768px) {
   .inicio-banner {
-    height: 300px;
-    border-radius: 12px;
-    margin-top: 1.25rem;
+    /* En mobile mostramos más altura relativa para que se vea el contenido */
+    aspect-ratio: 16 / 9;
+    max-height: none;
+    margin-top: var(--navbar-height);
+  }
+
+  .inicio-banner__arrow {
+    width: 38px;
+    height: 38px;
+  }
+
+  .inicio-banner__arrow svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .inicio-banner__arrow--left  { left: 10px; }
+  .inicio-banner__arrow--right { right: 10px; }
+
+  .inicio-banner__caption {
+    font-size: 0.85rem;
+    padding: 10px 20px;
+    bottom: 48px;
   }
 }
 
-/* Mobile */
-@media (max-width: 575.98px) {
+@media (max-width: 575px) {
   .inicio-banner {
-    height: 220px;
-    border-radius: 10px;
-    margin-top: 1rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .inicio-banner__overlay {
-    padding: 1rem;
+  
+     padding-top: 112px;
+    aspect-ratio: 4 / 3;
   }
 }

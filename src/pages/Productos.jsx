@@ -268,7 +268,7 @@ export default function Productos() {
   );
 
   return (
-    <div style={{ maxWidth: "1280px", margin: "0 auto", padding: isMobile ? "20px 16px 80px" : "40px 24px 80px" }}>
+     <div className="page-content"> 
 
       {/* ── BARRA SUPERIOR MOBILE: buscador + botón filtros ── */}
       {isMobile && (
@@ -535,5 +535,6 @@ export default function Productos() {
         </>
       )}
     </div>
+    
   );
 }

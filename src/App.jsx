@@ -23,6 +23,7 @@ import PedidosList from './admin/PedidoList';
 
 
 import './index.css';
+import './Navbar.css';
 import './Footer.css'
 import "react-toastify/dist/ReactToastify.css";
 
@@ -33,11 +34,11 @@ function App() {
       <AuthProvider>
          <ProductsProvider>
           <ScrollToTop />
-        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
-          <Navbar />
-          <CartDrawer />
-          <div style={{ paddingTop: "var(--navbar-height)",flex: "1 1 auto",minHeight: "60vh"}}>
-              <Routes>
+       <div style={{ flex: "1 1 auto", minHeight: "60vh" }}>
+  <Navbar />
+  <CartDrawer />
+  <div style={{ flex: "1 1 auto", minHeight: "60vh" }}>
+    <Routes>
      {/* ── Rutas públicas ── */}
   <Route path='/'              element={<Inicio />}           />
   <Route path='/nosotros'      element={<Nosotros />}         />

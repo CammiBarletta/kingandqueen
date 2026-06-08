@@ -1,9 +1,17 @@
 import InicioBanner from "../components/InicioBanner";
+import bannerInicio1 from "../assets/img/banner_inicio1.png";
+import bannerInicio2 from "../assets/img/banner_inicio2.png";
 import { useProducts } from "../context/ProductsContext";
 import ProductoCard from "../components/ProductoCard";
 import ProductCarousel from "../components/ProductCarousel";
 import { Link } from "react-router-dom";
 import "./Inicio.css";
+
+// ── Slides para el banner/carrusel ───────────────────────────────────────────
+const slides = [
+  { src: bannerInicio1, alt: "Banner 1" },
+  { src: bannerInicio2, alt: "Banner 2" },
+];
 
 // ── Franja de confianza con SVGs ─────────────────────────────────────────────
 const BENEFICIOS = [
@@ -50,9 +58,9 @@ const BENEFICIOS = [
 ];
 
 // ── URLs de imágenes de las cards de mascota ──────────────────────────────────
+const IMG_PERROS = "https://res.cloudinary.com/ddutzhkpe/image/upload/v1778884342/PERROS_1_qieor8.png";
+const IMG_GATOS  = "https://res.cloudinary.com/ddutzhkpe/image/upload/v1778884343/GATOS_1_gaxtmr.png";
 
-const IMG_PERROS = "https://res.cloudinary.com/ddutzhkpe/image/upload/v1778884342/PERROS_1_qieor8.png"
-const IMG_GATOS  = "https://res.cloudinary.com/ddutzhkpe/image/upload/v1778884343/GATOS_1_gaxtmr.png"
 // ── Card de mascota reutilizable ──────────────────────────────────────────────
 function MascotaCard({ to, imagen, gradiente, sombra, titulo, position = "center center" }) {
   return (
@@ -110,7 +118,8 @@ export default function Inicio() {
 
   return (
     <>
-      <InicioBanner />
+      {/* Banner full-bleed directo, sin padding extra */}
+      <InicioBanner slides={slides} interval={8000} />
 
       <div className="inicio-container">
 

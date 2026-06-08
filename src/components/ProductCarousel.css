@@ -1,54 +1,119 @@
-/* =========================================
-   ProductCarousel.css
-   ========================================= */
 
+/* ── Wrapper ──────────────────────────────────────────────────── */
 .carousel-wrapper {
   position: relative;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+
+  /* Espacio lateral para que las flechas no se corten */
+  padding: 0 8px;
 }
 
+/* ── Track ────────────────────────────────────────────────────── */
 .carousel-track {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 20px;
-  overflow-x: auto !important;
+  overflow-x: auto;
   overflow-y: visible;
-  scroll-snap-type: x mandatory;
+
+
   cursor: grab;
   padding: 12px 4px 20px;
   -webkit-overflow-scrolling: touch;
   width: 100%;
   box-sizing: border-box;
 
-  /* Ocultar scrollbar */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  /* Ocultar scrollbar cross-browser */
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE / Edge legacy */
 }
 .carousel-track::-webkit-scrollbar {
-  display: none;
+  display: none;               /* Chrome / Safari / Opera */
 }
-.carousel-track:active {
+.carousel-track.is-dragging {
   cursor: grabbing;
 }
 
-/* Item — tamaño fijo para que no colapsen */
+/* ── Item — tamaño fijo para cards uniformes ──────────────────── */
 .carousel-item {
-  flex: 0 0 260px !important;
-  width: 260px !important;
-  min-width: 260px !important;
-  max-width: 260px !important;
-  scroll-snap-align: start;
+  flex: 0 0 260px;
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
   box-sizing: border-box;
   transition: transform 0.25s ease;
+
+  /*
+    display: flex + flex-direction: column asegura que la card
+    interna (ProductoCard) se estire al 100% del alto disponible.
+    Esto es lo que iguala alturas cuando las cards tienen
+    contenido de distinta longitud (nombre largo, nombre corto, etc.)
+  */
+  display: flex;
+  flex-direction: column;
 }
-.carousel-item:hover {
-  transform: translateY(-4px);
+.carousel-item:hover img {
+  transform: scale(1.04);
+}
+.carousel-item img {
+  transition: transform 0.35s ease;
 }
 
-/* Flechas */
+/* La card de Bootstrap ocupa el 100% del item */
+.carousel-item .card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden; /* asegura que la imagen respete el border-radius */
+}
+
+/*
+  
+  Al darle una altura fija y overflow: hidden, la imagen queda
+  contenida en ese espacio sin importar sus dimensiones originales
+  object-fit: cover en la imagen hace el resto.
+*/
+.carousel-item .card-img-wrapper {
+  width: 100%;
+  height: 200px;           /* altura fija para todas las imágenes */
+  overflow: hidden;
+  flex-shrink: 0;          /* no se comprime si el texto es largo */
+}
+
+
+.carousel-item .card-img-top,
+.carousel-item .card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;          /* elimina el espacio baseline de inline */
+  transition: transform 0.35s ease;
+}
+
+/* Zoom sutil al hover — solo en la imagen, no en la card */
+.carousel-item:hover .card-img-top,
+.carousel-item:hover .card-img-wrapper img {
+  transform: scale(1.06);
+}
+
+/* El body de la card crece para llenar el espacio restante */
+.carousel-item .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Si hay un botón en la card, siempre queda abajo */
+.carousel-item .card-body .btn {
+  margin-top: auto;
+}
+
+/* ── Flechas ──────────────────────────────────────────────────── */
 .carousel-arrow {
   position: absolute;
   top: 50%;
@@ -65,7 +130,8 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
-  transition: background 0.2s, box-shadow 0.2s, opacity 0.25s, transform 0.25s;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s,
+              opacity 0.25s, transform 0.25s;
   padding: 0;
   line-height: 1;
 }
@@ -77,45 +143,71 @@
 .carousel-arrow--left  { left: -22px; }
 .carousel-arrow--right { right: -22px; }
 
+/* Ocultar con animación en vez de display: none */
 .carousel-arrow--hidden {
   opacity: 0;
   pointer-events: none;
   transform: translateY(-60%) scale(0.85);
 }
 
-/* Fades laterales */
+/* ── Fades laterales ──────────────────────────────────────────── */
 .carousel-fade {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 48px;
+  width: 56px;
   pointer-events: none;
   z-index: 5;
 }
 .carousel-fade--left {
-  left: 0;
-  background: linear-gradient(to right, #faf9f7, transparent);
+  left: 8px; /* alineado con el padding del wrapper */
+  background: linear-gradient(to right, #faf9f7 30%, transparent);
 }
 .carousel-fade--right {
-  right: 0;
-  background: linear-gradient(to left, #faf9f7, transparent);
+  right: 8px;
+  background: linear-gradient(to left, #faf9f7 30%, transparent);
 }
 
-/* Empty state */
+/* ── Empty state ──────────────────────────────────────────────── */
 .carousel-empty {
   color: #999;
   font-style: italic;
   padding: 24px 0;
 }
 
-/* Responsive */
+/* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .carousel-arrow { display: none; }
-  .carousel-item  {
-    flex: 0 0 200px !important;
-    width: 200px !important;
-    min-width: 200px !important;
-    max-width: 200px !important;
+  .carousel-arrow {
+    /* En mobile la navegación es touch; las flechas molestan */
+    display: none;
   }
-  .carousel-fade { display: none; }
+
+  .carousel-item {
+    /*
+      En mobile las cards más angostas permiten ver que hay más
+      contenido lateral — invita al swipe.
+    */
+    flex: 0 0 200px;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+  }
+
+  .carousel-item .card-img-wrapper {
+    height: 160px; /* proporcionalmente menor en mobile */
+  }
+
+  .carousel-fade {
+    display: none; /* con cards más angostas ya se ve el overflow */
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Tablet: tamaño intermedio */
+  .carousel-item {
+    flex: 0 0 230px;
+    width: 230px;
+    min-width: 230px;
+    max-width: 230px;
+  }
 }
