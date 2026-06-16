@@ -6,11 +6,14 @@ import ProductoCard from "../components/ProductoCard";
 import ProductCarousel from "../components/ProductCarousel";
 import { Link } from "react-router-dom";
 import "./Inicio.css";
+import bannerInicio1Mobile from "../assets/img/banner_inicio1_mobile.png";
+import bannerInicio2Mobile from "../assets/img/banner_inicio2_mobile.png";  
+
 
 // ── Slides para el banner/carrusel ───────────────────────────────────────────
 const slides = [
-  { src: bannerInicio1, alt: "Banner 1" },
-  { src: bannerInicio2, alt: "Banner 2" },
+  { src: bannerInicio1, srcMobile: bannerInicio1Mobile, alt: "Banner 1" },
+  { src: bannerInicio2, srcMobile: bannerInicio2Mobile, alt: "Banner 2" },
 ];
 
 // ── Franja de confianza con SVGs ─────────────────────────────────────────────
@@ -149,8 +152,7 @@ export default function Inicio() {
         {/* ── Sección: Por mascota ── */}
         <section className="inicio-section">
           <div className="inicio-section__header">
-            <div className="inicio-section__label">Explorá por mascota</div>
-            <h2 className="inicio-section__title">¿Para quién comprás hoy?</h2>
+             <h2 className="inicio-section__title">Explorá por mascota</h2>
             <div className="inicio-section__divider" />
           </div>
 

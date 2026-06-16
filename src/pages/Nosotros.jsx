@@ -10,27 +10,31 @@ const IMG_LOCAL      = "https://res.cloudinary.com/ddutzhkpe/image/upload/f_auto
 const IMG_TIENDA     = "https://res.cloudinary.com/ddutzhkpe/image/upload/f_auto,q_auto,w_1600/v1778896550/943c53ed-21a0-46eb-848f-8e290d2ba58b.png";
 const IMG_PELUQUERIA = "https://res.cloudinary.com/ddutzhkpe/image/upload/f_auto,q_auto,w_1800/v1778898756/ChatGPT_Image_15_may_2026_11_32_25_p.m._r8qr2m.png";
 
-// Hook reutilizable para fade-in al scroll
+// Hook optimizado para transiciones suaves al scroll
 function useFadeOnScroll() {
   const ref = useRef(null);
+  
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    
     const observer = new IntersectionObserver(
-  ([entry]) => {
-    if (entry.isIntersecting) {
-      el.classList.add("visible");
-      observer.unobserve(el);
-    }
-  },
-  {
-    threshold: 0.25,
-    rootMargin: "0px 0px -80px 0px"
-  }
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("visible");
+          observer.unobserve(el);
+        }
+      },
+      {
+        threshold: 0.15, // Activación temprana para evitar tirones visuales
+        rootMargin: "0px 0px -40px 0px"
+      }
     );
+    
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+  
   return ref;
 }
 
@@ -38,7 +42,7 @@ export default function Nosotros() {
   const refCierre = useFadeOnScroll();
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", color: "#1c1c1a", overflowX: "hidden" }}>
+    <div className="nosotros-page-container">
 
       {/* ── 1. Hero ── */}
       <NosotrosHero
@@ -55,7 +59,7 @@ export default function Nosotros() {
         fotoLado="left"
         fondo="light"
         eyebrow="Quiénes somos"
-        titulo={<>Nació de un amor<br />por las mascotas</>}
+        
       >
         <p>
           King & Queen nació en 2024 con una idea simple: que cada mascota reciba el cuidado que merece.
@@ -72,7 +76,7 @@ export default function Nosotros() {
         fotoLado="right"
         fondo="white"
         eyebrow="Peluquería canina"
-        titulo={<>Tu perro merece<br />verse increíble</>}
+       
       >
         <p>
           Además de nuestra tienda, ofrecemos un servicio de{" "}
@@ -98,23 +102,22 @@ export default function Nosotros() {
         fotoLado="left"
         fondo="light"
         eyebrow="Nuestra tienda"
-        titulo={<>Todo lo que tu<br />mascota necesita</>}
+       
       >
         <p>
           Alimentos balanceados, accesorios, juguetes y productos de higiene — seleccionados con criterio y cuidado. No somos un local más: somos el lugar donde encontrás lo que tu mascota necesita, con el consejo de alguien que realmente le importa.
         </p>
         <p>
-          Trabajamos con las mejores marcas del mercado y renovamos el catálogo constantemente para ofrecerte siempre lo mejor.
+          Trabajamos con las mejores marcas del mercado y renovemos el catálogo constantemente para ofrecerte siempre lo mejor.
         </p>
       </SplitSection>
 
-        {/* ── 5. Cierre ── */}
+      {/* ── 5. Cierre ── */}
       <section ref={refCierre} className="nosotros-cierre fade-in-scroll">
-        <p className="nosotros-cierre__eyebrow">Google Reviews</p>
-        <h2 className="nosotros-cierre__title">Lo que dicen nuestros clientes</h2>
- 
+        <h2 className="nosotros-cierre__eyebrow">Google Reviews</h2>
+        
         <OpinionesCarrusel />
- 
+        
         <div className="nosotros-cierre__actions" style={{ marginTop: "48px" }}>
           <Link to="/productos" className="nosotros-cierre__btn-primary">
             Ver productos
@@ -129,7 +132,7 @@ export default function Nosotros() {
           </a>
         </div>
       </section>
- 
+
     </div>
   );
 }

@@ -48,29 +48,24 @@
 }
 
 /* ── Tipografía ── */
+
 .ss__eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 650;        /* CAMBIO: de 800 a 600, más liviano */
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #4DB8C8;
-  margin: 0 0 14px;
+  margin: 0 0 20px;        /* CAMBIO: más espacio abajo porque ya no hay título */
+  line-height: 1.1;
 }
 
-.ss__title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(2rem, 3.2vw, 2.8rem);
-  font-weight: 700;
-  color: #1c1c1a;
-  line-height: 1.15;
-  margin: 0 0 20px;
-}
+
 
 .ss__divider {
   width: 48px;
   height: 3px;
-  background: #1a3a2a;
-  border-radius: 2px;
+  background: #4DB8C8;
+  border-radius: 8px;
   margin-bottom: 28px;
 }
 
@@ -86,9 +81,7 @@
    ANIMACIONES — Fade + Slide fuerte
    ═══════════════════════════════════════════════════════════════ */
 
-.ss__img-wrap {
-  will-change: transform, opacity;
-}
+
 
 .ss__img-wrap--from-left {
   opacity: 0;
@@ -107,7 +100,6 @@
 }
 
 .ss__text {
-  will-change: transform, opacity;
   opacity: 0;
   transform: translateY(50px);
   transition:

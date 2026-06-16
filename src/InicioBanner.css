@@ -11,13 +11,12 @@
   overflow: hidden;
   background: #f0f0f0;
   user-select: none;
-  margin-top: var(--navbar-height);  
 }
 
 @media (max-width: 575px) {
   .inicio-banner {
-    margin-top: var(--navbar-height);  
     aspect-ratio: 4 / 3;
+    max-height: none;
   }
 }
 
@@ -167,7 +166,7 @@
     /* En mobile mostramos más altura relativa para que se vea el contenido */
     aspect-ratio: 16 / 9;
     max-height: none;
-    margin-top: var(--navbar-height);
+
   }
 
   .inicio-banner__arrow {
@@ -192,8 +191,6 @@
 
 @media (max-width: 575px) {
   .inicio-banner {
-  
-     padding-top: 112px;
-    aspect-ratio: 4 / 3;
+     aspect-ratio: 1 / 1;
   }
 }

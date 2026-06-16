@@ -1,0 +1,179 @@
+/* ── Página ── */
+.detalle-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+}
+
+/* ── Card principal ── */
+.detalle-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 48px;
+  max-width: 980px;
+  margin: 0 auto;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+}
+
+/* ── Imagen ── */
+.detalle-imagen {
+  background: linear-gradient(180deg, #fafafa 0%, #f2f2f2 100%);
+  border-radius: 20px;
+  padding: 24px;
+}
+.detalle-imagen__img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+}
+/* ── Info ── */
+.detalle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Responsive — mobile: columna única ── */
+@media (max-width: 768px) {
+  .detalle-page {
+    padding: 24px 16px 60px;
+  }
+
+  .detalle-card {
+    grid-template-columns: 1fr;  /* apila imagen arriba, info abajo */
+    gap: 24px;
+    padding: 20px;
+  }
+}
+
+/* ── Badge ── */
+.detalle-badge {
+  display: inline-block;
+  background: #e8f8fb;
+  color: #0e7a8a;
+    font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: capitalize;
+  align-self: flex-start;
+}
+
+/* ── Nombre ── */
+.detalle-nombre {
+  font-family: 'Playfair Display', Georgia, serif;
+font-size: clamp(2rem, 4vw, 2.8rem);
+  line-height: 1.15;
+  color: #1c1c1a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ── Precio ── */
+.detalle-precio {
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 800;
+  color: #0e7a8a;
+  margin: 0;
+}
+.detalle-cuotas {
+  margin: -8px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+/* ── Separador ── */
+.detalle-divider {
+  height: 1px;
+  background: #e4e2dc;
+  width: 100%;
+}
+
+/* ── Descripción ── */
+.detalle-descripcion {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Beneficios ── */
+.detalle-beneficios {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detalle-beneficios {
+  display: grid;
+  gap: 12px;
+}
+
+.detalle-beneficio {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafb;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #edf0f2;
+  font-size: 14px;
+}
+
+/* ── Botones ── */
+.detalle-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.detalle-btn-carrito {
+  background: #1a3a2a;   
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 0;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+.detalle-btn-carrito:hover {
+  background: #2d5c42;
+}
+
+.detalle-btn-volver {
+  background: transparent;
+  color: #666;
+  border: 1.5px solid #e4e2dc;
+  border-radius: 8px;
+  padding: 11px 0;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.detalle-btn-volver:hover {
+  border-color: #999;
+  color: #1c1c1a;
+}
+/* ── Relacionados ── */
+.detalle-relacionados {
+  margin-top: 64px;
+}
+
+.detalle-relacionados__titulo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  font-weight: 600;
+  color: #1c1c1a;
+  margin: 0 0 24px;
+}

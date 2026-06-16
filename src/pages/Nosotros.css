@@ -1,6 +1,13 @@
 /* ── Nosotros.css ─────────────────────────────────────────────────────────── */
 
-/* Hero */
+/* Estilos Globales de la Página */
+.nosotros-page-container {
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1c1c1a;
+  background-color: #fff;
+}
+
+/* Hero Section */
 .nosotros-hero {
   position: relative;
   height: 100vh;
@@ -9,8 +16,9 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  overflow: hidden;
+
 }
+
 .nosotros-hero__bg {
   position: absolute;
   inset: 0;
@@ -18,67 +26,95 @@
   background-size: cover;
   background-position: center;
 }
+
 .nosotros-hero__bg::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .nosotros-hero__content {
   position: relative;
   z-index: 1;
   padding: 0 24px;
-  max-width: 720px;
+  max-width: 800px; /* Un poco más amplio para albergar títulos grandes */
 }
 
 .nosotros-hero__eyebrow {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.75);
   margin-bottom: 16px;
 }
 
+/* Títulos más grandes y legibles con clamp */
 .nosotros-hero__title {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-size: clamp(3rem, 7vw, 5.5rem); /* Escalado optimizado */
   font-weight: 700;
   color: #fff;
-  line-height: 1.15;
-  margin: 0 0 20px;
+  line-height: 1.1;
+  margin: 0 0 24px;
 }
 
 .nosotros-hero__subtitle {
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  color: rgba(255, 255, 255, 0.8);
+  font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+  color: rgba(255, 255, 255, 0.9);
   line-height: 1.6;
   margin: 0 0 36px;
 }
 
-.nosotros-hero__arrow {
-  animation: bounce 2s infinite;
+/* ── Estilos sugeridos para tu componente SplitSection ── */
+.split-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+  padding: 80px 4%;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(8px); }
+.split-section__imagen-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
-/* ── Fade-in base ── */
-.fade-in-scroll {
-  opacity: 0;
-  transform: translate3d(0, 40px, 0);
-  transition: opacity 0.65s ease-out, transform 0.65s ease-out;
-}
-.fade-in-scroll.visible {
-  opacity: 1;
-  transform: translateY(0);
+.split-section__img {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  display: block;
 }
 
+.split-section__text {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
-/* Botón CTA dentro de sección */
+/* Títulos de las secciones de la historia */
+.split-section__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.2rem, 4.5vw, 3.5rem); /* Significativamente más grande */
+  line-height: 1.15;
+  color: #1a3a2a;
+  margin-bottom: 24px;
+}
+
+.split-section__text p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #4a4a46;
+  margin-bottom: 16px;
+}
+
+/* Botón CTA */
 .nosotros-btn {
   align-self: flex-start;
   display: inline-flex;
@@ -86,42 +122,39 @@
   gap: 8px;
   background: #1a3a2a;
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  padding: 11px 22px;
+  padding: 12px 26px;
   border-radius: 50px;
   text-decoration: none;
-  transition: background 0.2s;
+  transition: background 0.2s ease;
   margin-top: 12px;
 }
 
-.nosotros-btn:hover { background: #2d6a4f; }
-
-/* ── Sección cierre ── */
-.nosotros-cierre {
-  text-align: center;
-  padding: 64px 24px;
-  background: #fff;
+.nosotros-btn:hover { 
+  background: #2d6a4f; 
 }
 
-.nosotros-cierre__eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.4);
-  margin-bottom: 12px;
+/* ── Sección de Cierre y Reviews ── */
+.nosotros-cierre {
+  text-align: center;
+  padding: 100px 24px 60px;
+  background: #f9f9f6;
+}
+
+@media (max-width: 768px) {
+  .nosotros-cierre {
+    padding: 48px 20px 40px;  
+  }
 }
 
 .nosotros-cierre__title {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 700;
   color: #1c1c1a;
   margin: 0 0 40px;
 }
-
-.nosotros-cierre__horario { display: none; }
 
 .nosotros-cierre__actions {
   display: flex;
@@ -130,70 +163,69 @@
   flex-wrap: wrap;
 }
 
-.nosotros-cierre__btn-primary {
-  display: inline-flex;
-  align-items: center;
-  background: #1a3a2a;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 13px 28px;
-  border-radius: 50px;
-  text-decoration: none;
-  transition: opacity 0.2s;
-}
-
-.nosotros-cierre__btn-primary:hover { opacity: 0.85; }
-
+.nosotros-cierre__btn-primary,
 .nosotros-cierre__btn-ghost {
   display: inline-flex;
   align-items: center;
-  background: transparent;
-  color: #1a3a2a;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  padding: 13px 28px;
+  padding: 14px 32px;
   border-radius: 50px;
   text-decoration: none;
-  border: 1.5px solid rgba(26, 58, 42, 0.35);
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
 }
 
-.nosotros-cierre__btn-ghost:hover { border-color: #1a3a2a; }
+.nosotros-cierre__btn-primary {
+  background: #1a3a2a;
+  color: #fff;
+}
 
-/* ── Responsive ── */
-@media (max-width: 768px) {
+.nosotros-cierre__btn-primary:hover { 
+  background: #2d6a4f;
+}
+
+.nosotros-cierre__btn-ghost {
+  background: transparent;
+  color: #1a3a2a;
+  border: 1.5px solid #1a3a2a;
+}
+
+.nosotros-cierre__btn-ghost:hover { 
+  background: rgba(26, 58, 42, 0.05);
+}
+
+/* ── Responsive Desing ── */
+@media (max-width: 992px) {
   .split-section {
     grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 60px 24px;
   }
 
-  /* En mobile la imagen siempre va arriba */
   .split-section__imagen-wrap {
-    order: -1;
-    padding: 32px 24px 24px;
+    order: -1; /* Mantiene la imagen arriba en mobile */
   }
 
   .split-section__img {
-    height: 260px;
-    border-radius: 16px;
+    height: 350px; /* Más alto para que luzca mejor en tablets/móviles */
   }
-
+  
   .split-section__text {
-    padding: 36px 24px 48px;
-  }
-
-  .nosotros-cierre {
-    padding: 48px 16px;
+    padding: 0;
   }
 }
 
-/* ── Optimización de animaciones ── */
-.fade-in-scroll,
-.nosotros-hero__bg {
+/* Hardware acceleration limpia solo para el contenedor móvil si es necesario */
+.fade-in-scroll {
   will-change: transform, opacity;
-  backface-visibility: hidden;
 }
+@media (max-width: 768px) {
+  .nosotros-hero {
+    height: 70vh;        
+    min-height: 400px;
+  }
 
-.split-section__img {
-  will-change: transform, opacity;
+  .nosotros-hero__bg {
+    background-position: center center;
+  }
 }

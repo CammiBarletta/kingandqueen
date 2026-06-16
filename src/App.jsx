@@ -37,7 +37,7 @@ function App() {
        <div style={{ flex: "1 1 auto", minHeight: "60vh" }}>
   <Navbar />
   <CartDrawer />
-  <div style={{ flex: "1 1 auto", minHeight: "60vh" }}>
+  <div className="page-content" style={{ flex: "1 1 auto", minHeight: "60vh" }}>
     <Routes>
      {/* ── Rutas públicas ── */}
   <Route path='/'              element={<Inicio />}           />

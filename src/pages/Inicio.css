@@ -50,10 +50,9 @@ body {
   color: var(--color-accent);
   margin-bottom: 8px;
 }
-
 .inicio-section__title {
   font-family: var(--font-display);
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 600;
   color: var(--color-text);
   margin: 0 0 16px;
@@ -155,7 +154,7 @@ body {
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .inicio-container {
-    padding: 40px 16px 60px;
+    padding: 0px 16px 60px;
   }
   .inicio-section {
     margin-bottom: 52px;

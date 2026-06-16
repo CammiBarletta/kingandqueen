@@ -11,7 +11,10 @@ export default function NosotrosHero({ imagen, eyebrow, titulo, subtitulo }) {
     <section className="nosotros-hero">
       <div
         className="nosotros-hero__bg"
-        style={{ backgroundImage: `url(${imagen})` }}
+        style={{ backgroundImage: `url(${imagen})`,
+        backgroundPosition: "center center", 
+        backgroundSize: "cover",
+     }}
         role="img"
         aria-label={titulo}
       />

@@ -110,11 +110,19 @@ export default function InicioBanner({
             ].join(" ").trim()}
             aria-hidden={i !== current}
           >
-            <img
-              src={slide.src}
-              alt={slide.alt || `Banner ${i + 1}`}
-              className="inicio-banner__img"
-            />
+            <picture>
+  {slide.srcMobile && (
+    <source
+      media="(max-width: 575px)"
+      srcSet={slide.srcMobile}
+    />
+  )}
+  <img
+    src={slide.src}
+    alt={slide.alt || `Banner ${i + 1}`}
+    className="inicio-banner__img"
+  />
+</picture>
 
             {/* Caption individual por slide (opcional) */}
             {slide.caption && (

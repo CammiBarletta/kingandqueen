@@ -1,213 +1,267 @@
 
+
 /* ── Wrapper ──────────────────────────────────────────────────── */
-.carousel-wrapper {
+.slider-wrapper {
   position: relative;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
 
-  /* Espacio lateral para que las flechas no se corten */
-  padding: 0 8px;
+  /*
+    CAMBIO: en mobile no necesitamos padding lateral para flechas
+    porque las flechas no se muestran en mobile.
+    El padding lo agregamos solo en desktop via @media.
+  */
+  padding: 0;
 }
 
 /* ── Track ────────────────────────────────────────────────────── */
-.carousel-track {
+.slider-track {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  gap: 20px;
+  gap: 14px;                   /* CAMBIO: 14px en mobile, más compacto */
   overflow-x: auto;
   overflow-y: visible;
-
-
   cursor: grab;
-  padding: 12px 4px 20px;
+  padding: 8px 16px 20px;
   -webkit-overflow-scrolling: touch;
   width: 100%;
   box-sizing: border-box;
-
+  align-items: stretch;
   /* Ocultar scrollbar cross-browser */
-  scrollbar-width: none;       /* Firefox */
-  -ms-overflow-style: none;    /* IE / Edge legacy */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+
 }
-.carousel-track::-webkit-scrollbar {
-  display: none;               /* Chrome / Safari / Opera */
+
+.slider-track::-webkit-scrollbar {
+  display: none;
 }
-.carousel-track.is-dragging {
+
+.slider-track.is-dragging {
   cursor: grabbing;
 }
 
-/* ── Item — tamaño fijo para cards uniformes ──────────────────── */
-.carousel-item {
+/* ── Item ─────────────────────────────────────────────────────── */
+.slider-item {
   flex: 0 0 260px;
   width: 260px;
+  height: 100%;
   min-width: 260px;
   max-width: 260px;
   box-sizing: border-box;
   transition: transform 0.25s ease;
-
-  /*
-    display: flex + flex-direction: column asegura que la card
-    interna (ProductoCard) se estire al 100% del alto disponible.
-    Esto es lo que iguala alturas cuando las cards tienen
-    contenido de distinta longitud (nombre largo, nombre corto, etc.)
-  */
   display: flex;
   flex-direction: column;
 }
-.carousel-item:hover img {
+.slider-item:hover img {
   transform: scale(1.04);
 }
-.carousel-item img {
+
+.slider-item img {
   transition: transform 0.35s ease;
 }
-
-/* La card de Bootstrap ocupa el 100% del item */
-.carousel-item .card {
+/* ── Card interna ─────────────────────────────────────────────── */
+.slider-item .card {
   height: 100%;
   display: flex;
   flex-direction: column;
   border-radius: 12px;
-  overflow: hidden; /* asegura que la imagen respete el border-radius */
-}
-
-/*
-  
-  Al darle una altura fija y overflow: hidden, la imagen queda
-  contenida en ese espacio sin importar sus dimensiones originales
-  object-fit: cover en la imagen hace el resto.
-*/
-.carousel-item .card-img-wrapper {
-  width: 100%;
-  height: 200px;           /* altura fija para todas las imágenes */
   overflow: hidden;
-  flex-shrink: 0;          /* no se comprime si el texto es largo */
+  border: 1px solid #ebebeb !important;
+  box-shadow: none;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
+/* ── Imagen ───────────────────────────────────────────────────── */
+.slider-item .card-img-wrapper {
+  width: 100%;
+  height: 160px;               /* mobile: más chico */
+  overflow: hidden;
+  flex-shrink: 0;
+}
 
-.carousel-item .card-img-top,
-.carousel-item .card-img-wrapper img {
+.slider-item .card-img-top,
+.slider-item .card-img-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  display: block;          /* elimina el espacio baseline de inline */
+  display: block;
   transition: transform 0.35s ease;
 }
 
-/* Zoom sutil al hover — solo en la imagen, no en la card */
-.carousel-item:hover .card-img-top,
-.carousel-item:hover .card-img-wrapper img {
-  transform: scale(1.06);
-}
-
-/* El body de la card crece para llenar el espacio restante */
-.carousel-item .card-body {
+/* ── Card body ────────────────────────────────────────────────── */
+.slider-item .card-body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  padding: 12px;               /* CAMBIO: padding más compacto en mobile */
 }
 
-/* Si hay un botón en la card, siempre queda abajo */
-.carousel-item .card-body .btn {
+/* Botón siempre al fondo */
+.slider-item .card-body .btn {
   margin-top: auto;
 }
 
-/* ── Flechas ──────────────────────────────────────────────────── */
-.carousel-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-60%);
-  z-index: 10;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1.5px solid #d0d0c8;
-  background: #ffffff;
-  color: #1a3a2a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s,
-              opacity 0.25s, transform 0.25s;
-  padding: 0;
-  line-height: 1;
-}
-.carousel-arrow:hover {
-  background: #1a3a2a;
-  color: #fff;
-  box-shadow: 0 6px 20px rgba(26, 58, 42, 0.18);
-}
-.carousel-arrow--left  { left: -22px; }
-.carousel-arrow--right { right: -22px; }
-
-/* Ocultar con animación en vez de display: none */
-.carousel-arrow--hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-60%) scale(0.85);
+/* ── Flechas — ocultas en mobile ──────────────────────────────── */
+.slider-arrow {
+  display: none;               /* mobile-first: hidden por defecto */
 }
 
-/* ── Fades laterales ──────────────────────────────────────────── */
-.carousel-fade {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 56px;
-  pointer-events: none;
-  z-index: 5;
-}
-.carousel-fade--left {
-  left: 8px; /* alineado con el padding del wrapper */
-  background: linear-gradient(to right, #faf9f7 30%, transparent);
-}
-.carousel-fade--right {
-  right: 8px;
-  background: linear-gradient(to left, #faf9f7 30%, transparent);
+
+.slider-fade {
+  display: none;
 }
 
 /* ── Empty state ──────────────────────────────────────────────── */
-.carousel-empty {
+.slider-empty {
   color: #999;
   font-style: italic;
-  padding: 24px 0;
+  padding: 24px 16px;
+  text-align: center;          /* CAMBIO: centrado en mobile */
 }
 
-/* ── Responsive ───────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .carousel-arrow {
-    /* En mobile la navegación es touch; las flechas molestan */
-    display: none;
+/* ══════════════════════════════════════════════════════════════
+   TABLET — 600px+
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 600px) {
+  .slider-track {
+    gap: 16px;
+    padding: 10px 20px 20px;
   }
 
-  .carousel-item {
+  .slider-item {
     /*
-      En mobile las cards más angostas permiten ver que hay más
-      contenido lateral — invita al swipe.
+      En tablet mostramos 2.5 cards — el medio que asoma
+      sigue siendo la señal de "hay más".
     */
-    flex: 0 0 200px;
-    width: 200px;
-    min-width: 200px;
-    max-width: 200px;
+    flex: 0 0 calc((100vw - 56px) / 2.5);
+    width: calc((100vw - 56px) / 2.5);
+    max-width: 240px;
   }
 
-  .carousel-item .card-img-wrapper {
-    height: 160px; /* proporcionalmente menor en mobile */
-  }
-
-  .carousel-fade {
-    display: none; /* con cards más angostas ya se ve el overflow */
+  .slider-item .card-img-wrapper {
+    height: 180px;
   }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  /* Tablet: tamaño intermedio */
-  .carousel-item {
-    flex: 0 0 230px;
-    width: 230px;
-    min-width: 230px;
-    max-width: 230px;
+/* ══════════════════════════════════════════════════════════════
+   DESKTOP — 1024px+
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 1024px) {
+  .slider-wrapper {
+    /* Espacio para que las flechas absolutas no se corten */
+    padding: 0 28px;
+  }
+
+  .slider-track {
+    gap: 20px;
+    padding: 12px 4px 20px;
+  }
+
+  .slider-item {
+    /* En desktop: tamaño fijo, no fluido */
+    flex: 0 0 260px;
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+  }
+
+  .slider-item .card-img-wrapper {
+    height: 200px;
+  }
+
+  .slider-item .card-body {
+    padding: 14px 16px;
+  }
+
+  /* Hover en desktop: sombra en la card */
+  .slider-item:hover .card {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+    border-color: #d0d0d0 !important;
+  }
+
+  /* Zoom en imagen al hover — solo desktop porque en mobile no hay hover */
+  .slider-item:hover .card-img-top,
+  .slider-item:hover .card-img-wrapper img {
+    transform: scale(1.06);
+  }
+
+  /* Flechas — solo desktop */
+  .slider-arrow {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-60%);
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid #d0d0c8;
+    background: #ffffff;
+    color: #1a3a2a;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s,
+                opacity 0.25s, transform 0.25s;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .slider-arrow:hover {
+    background: #1a3a2a;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(26, 58, 42, 0.18);
+  }
+
+  .slider-arrow--left  { left: -22px; }
+  .slider-arrow--right { right: -22px; }
+
+  .slider-arrow--hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-60%) scale(0.85);
+  }
+
+  /* Fades — solo desktop */
+  .slider-fade {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 56px;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .slider-fade--left {
+    left: 28px;
+    background: linear-gradient(to right, #faf9f7 30%, transparent);
+  }
+
+  .slider-fade--right {
+    right: 28px;
+    background: linear-gradient(to left, #faf9f7 30%, transparent);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DESKTOP GRANDE — 1280px+
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 1280px) {
+  .slider-item {
+    flex: 0 0 280px;
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+  }
+
+  .slider-item .card-img-wrapper {
+    height: 220px;
   }
 }
