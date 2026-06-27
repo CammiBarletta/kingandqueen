@@ -1,12 +1,3 @@
-/**
- * Contacto.jsx — King & Queen Pet Shop
- *
- * META DESCRIPCIÓN SUGERIDA:
- * "King & Queen Pet Shop — Contactanos para consultas sobre alimentos para perros y gatos,
- *  accesorios para mascotas y peluquería canina. Visitanos en Buenos Aires,
- *  lunes a sábado de 08:00 a 20:00."
- */
-
 import { useRef, useState } from "react";
 
 // ── Datos del local ───────────────────────────────────────────────────────────
@@ -19,7 +10,6 @@ const LOCAL = {
   emailHref:    "mailto:kingandqueenpetshop@email.com",
   whatsapp:     "https://wa.me/5491128714704",
   instagram:    "https://instagram.com/kingandqueenpetshop",
-  // ✅ Solo la URL del src, sin el tag <iframe>
   mapaSrc:      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.4876535421704!2d-58.4101234238398!3d-34.59182835711403!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcca846af7b6d5%3A0xb701b260e26daf3b!2sKing%20%26%20Queen%20Pet%20Shop!5e0!3m2!1ses-419!2sar!4v1778901561452!5m2!1ses-419!2sar",
   horarios: [
     { dia: "Lunes a viernes", hora: "08:00 – 20:00" },
@@ -232,7 +222,6 @@ export default function Contacto() {
           />
           <div className="cto-hero__overlay" aria-hidden="true" />
           <div className="cto-hero__body">
-            <p className="cto-hero__eye">Tienda de mascotas · Buenos Aires</p>
             <h1 className="cto-hero__h1">Visitanos</h1>
             <p className="cto-hero__sub">
               Estamos esperándote con todo lo que tu mascota necesita.<br />
