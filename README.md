@@ -1,56 +1,94 @@
-# 🐾 King & Queen Pet Shop
+#  King & Queen Pet Shop
 
 Ecommerce desarrollado en React para una tienda de artículos y peluquería canina ubicada en Buenos Aires, Argentina.
 
-##  Tecnologías utilizadas
+🔗 **Demo en vivo:** https://kingandqueen-ruby.vercel.app/
 
-- React 
+## Tecnologías utilizadas
+
+- React
 - React Router DOM
+- Context API (manejo de estado global)
+- Firebase Authentication (login de usuarios)
+- Firestore (base de datos)
+- Cloudinary (almacenamiento de imágenes)
 - Bootstrap 5
-- MockAPI (base de datos provisional)
 - Vite
+- Servicio de email (notificaciones de pedidos)
+- Deploy en Vercel
 
-##  Instalación y uso
+## Instalación y uso
 
 1. Clonar el repositorio
+
 ```bash
-   git clone https://github.com/CammiBarletta/kingandqueen.git
+git clone https://github.com/CammiBarletta/kingandqueen.git
 ```
 
 2. Instalar dependencias
+
 ```bash
-   npm install
+npm install
 ```
 
-3. Correr el proyecto
+3. Configurar variables de entorno
+
+Crear un archivo `.env` en la raíz con las credenciales de Firebase y Cloudinary:
+
+```
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_CLOUDINARY_CLOUD_NAME=
+...
+```
+
+4. Correr el proyecto
+
 ```bash
-   npm run dev
+npm run dev
 ```
 
-4. Abrir en el navegador
+5. Abrir en el navegador
+
 ```
-   http://localhost:5173
+http://localhost:5173
 ```
 
-##  Funcionalidades
+## Capturas
 
-- Listado de productos desde API externa
+| Inicio (Desktop) | Inicio (Mobile) |
+|---|---|
+| ![Inicio Desktop](./screenshoots/home.jpg) | ![Inicio Mobile](./screenshoots/home-mobile.jpg) |
+
+| Listado de productos | Carrito |
+|---|---|
+| ![Productos](./screenshoots/productos.jpg) | ![Carrito](./screenshoots/carrito.jpg) |
+
+## Funcionalidades
+
+- Listado de productos desde Firestore
 - Detalle de producto individual
-- Carrito de compras con manejo de cantidades
+- Carrito de compras con manejo de cantidades (Context API)
+- Autenticación de usuarios con Firebase Auth
 - Navbar con dos niveles y carrito en tiempo real
-- Navegación entre páginas sin recarga (SPA)
-- Diseño responsive con Bootstrap
-
-##  Próximamente
-
-- Autenticación de usuarios
+- Carrusel de productos destacados
+- Panel de administración (alta/edición de productos)
 - Filtro por categorías
 - Buscador de productos
-- Finalizar compra por WhatsApp
-- Panel de administración
+- Finalización de compra por WhatsApp
+- Envío de notificaciones por email ante nuevos pedidos
+- Navegación entre páginas sin recarga (SPA)
+- Diseño responsive mobile-first con Bootstrap
+- Deploy continuo en Vercel
 
-## 👩‍💻 Autora
+## Próximamente
 
-Camila Barletta  
+- Verificación de responsive design en dispositivos reales
+- Mejoras de SEO
+- Revisión de reglas de seguridad de Firestore
 
+## Desarrolla
+
+Camila Barletta
 [@CammiBarletta](https://github.com/CammiBarletta)
