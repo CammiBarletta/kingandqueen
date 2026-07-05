@@ -81,12 +81,13 @@ http://localhost:5173
 - Navegación entre páginas sin recarga (SPA)
 - Diseño responsive mobile-first con Bootstrap
 - Deploy continuo en Vercel
+- Reglas de seguridad de Firestore validadas (control de acceso por rol admin/usuario)
 
 ## Próximamente
 
 - Verificación de responsive design en dispositivos reales
 - Mejoras de SEO
-- Revisión de reglas de seguridad de Firestore
+
 
 ## Desarrolla
 
